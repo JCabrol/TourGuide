@@ -1,6 +1,7 @@
 package tourGuide.tracker;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -10,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import tourGuide.service.TourGuideService;
-import tourGuide.user.User;
+import tourGuide.model.User;
 
 public class Tracker extends Thread {
 	private Logger logger = LoggerFactory.getLogger(Tracker.class);
@@ -21,10 +22,10 @@ public class Tracker extends Thread {
 
 	public Tracker(TourGuideService tourGuideService) {
 		this.tourGuideService = tourGuideService;
-		
+
 		executorService.submit(this);
 	}
-	
+
 	/**
 	 * Assures to shut down the Tracker thread
 	 */
@@ -32,7 +33,6 @@ public class Tracker extends Thread {
 		stop = true;
 		executorService.shutdownNow();
 	}
-	
 	@Override
 	public void run() {
 		StopWatch stopWatch = new StopWatch();
@@ -41,13 +41,19 @@ public class Tracker extends Thread {
 				logger.debug("Tracker stopping");
 				break;
 			}
-			
+
 			List<User> users = tourGuideService.getAllUsers();
 			logger.debug("Begin Tracker. Tracking " + users.size() + " users.");
 			stopWatch.start();
-			users.forEach(u -> tourGuideService.trackUserLocation(u));
+			users.forEach(u -> {
+				try {
+					tourGuideService.trackUserLocation(u);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
 			stopWatch.stop();
-			logger.debug("Tracker Time Elapsed: " + TimeUnit.MILLISECONDS.toSeconds(stopWatch.getTime()) + " seconds."); 
+			logger.debug("Tracker Time Elapsed: " + TimeUnit.MILLISECONDS.toSeconds(stopWatch.getTime()) + " seconds.");
 			stopWatch.reset();
 			try {
 				logger.debug("Tracker sleeping");
@@ -56,6 +62,7 @@ public class Tracker extends Thread {
 				break;
 			}
 		}
-		
+
 	}
+
 }
