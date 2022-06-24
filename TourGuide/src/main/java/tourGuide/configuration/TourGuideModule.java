@@ -3,26 +3,26 @@ package tourGuide.configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import gpsUtil.GpsUtil;
-import rewardCentral.RewardCentral;
 import tourGuide.repository.GpsUtilRepository;
 import tourGuide.repository.RewardCentralRepository;
 import tourGuide.repository.UserRepository;
 import tourGuide.service.GpsUtilService;
+import tourGuide.service.GpsUtilServiceImpl;
 import tourGuide.service.RewardsService;
+import tourGuide.service.RewardsServiceImpl;
 
 @Configuration
 public class TourGuideModule {
 
 	@Bean
-	public GpsUtilService getGpsUtil() {
-		return new GpsUtilService(new GpsUtilRepository());
+	public GpsUtilServiceImpl getGpsUtil() {
+		return new GpsUtilServiceImpl(new GpsUtilRepository());
 	}
 
-	@Bean
-	public RewardsService getRewardsService() {
-		return new RewardsService(getGpsUtil(), getRewardCentralRepository());
-	}
+//	@Bean
+//	public RewardsServiceImpl getRewardsService() {
+//		return new RewardsServiceImpl(getGpsUtil(), getRewardCentralRepository());
+//	}
 
 	@Bean
 	public RewardCentralRepository getRewardCentralRepository() {

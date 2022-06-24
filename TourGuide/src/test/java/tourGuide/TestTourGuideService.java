@@ -5,17 +5,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
-import gpsUtil.GpsUtil;
-import gpsUtil.location.Attraction;
 import org.junit.Test;
 
 import gpsUtil.location.VisitedLocation;
-import rewardCentral.RewardCentral;
 import tourGuide.helper.InternalTestHelper;
 import tourGuide.model.UserCloseAttractionsInfo;
-import tourGuide.model.UserReward;
 import tourGuide.repository.GpsUtilRepository;
 import tourGuide.repository.RewardCentralRepository;
 import tourGuide.repository.UserRepository;
@@ -27,25 +22,25 @@ public class TestTourGuideService {
 
 	@Test
 	public void getUserLocation() throws Exception {
-		GpsUtilService gpsUtil = new GpsUtilService(new GpsUtilRepository());
-		RewardsService rewardsService = new RewardsService(gpsUtil, new RewardCentralRepository());
+		GpsUtilServiceImpl gpsUtil = new GpsUtilServiceImpl(new GpsUtilRepository());
+		RewardsServiceImpl rewardsService = new RewardsServiceImpl(gpsUtil, new RewardCentralRepository());
         UserRepository userRepository = new UserRepository();
 		InternalTestHelper.setInternalUserNumber(0);
-		TourGuideService tourGuideService = new TourGuideService(gpsUtil, rewardsService,userRepository);
+		TourGuideServiceImpl tourGuideService = new TourGuideServiceImpl(gpsUtil, rewardsService,userRepository);
 
 		User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
-		VisitedLocation visitedLocation = (VisitedLocation) tourGuideService.trackUserLocation(user);
+		VisitedLocation visitedLocation = tourGuideService.trackUserLocation(user);
 		tourGuideService.tracker.stopTracking();
 		assertEquals(visitedLocation.userId, user.getUserId());
 	}
 
 	@Test
 	public void addUser() throws Exception {
-		GpsUtilService gpsUtil = new GpsUtilService(new GpsUtilRepository());
-		RewardsService rewardsService = new RewardsService(gpsUtil, new RewardCentralRepository());
+		GpsUtilServiceImpl gpsUtil = new GpsUtilServiceImpl(new GpsUtilRepository());
+		RewardsServiceImpl rewardsService = new RewardsServiceImpl(gpsUtil, new RewardCentralRepository());
 		UserRepository userRepository = new UserRepository();
 		InternalTestHelper.setInternalUserNumber(0);
-		TourGuideService tourGuideService = new TourGuideService(gpsUtil, rewardsService,userRepository);
+		TourGuideServiceImpl tourGuideService = new TourGuideServiceImpl(gpsUtil, rewardsService,userRepository);
 
 		User model = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
 		User user2 = new User(UUID.randomUUID(), "jon2", "000", "jon2@tourGuide.com");
@@ -63,12 +58,12 @@ public class TestTourGuideService {
 	}
 
 	@Test
-	public void getAllUsers() throws Exception {
-		GpsUtilService gpsUtil = new GpsUtilService(new GpsUtilRepository());
-		RewardsService rewardsService = new RewardsService(gpsUtil, new RewardCentralRepository());
+	public void getAllUsers() {
+		GpsUtilServiceImpl gpsUtil = new GpsUtilServiceImpl(new GpsUtilRepository());
+		RewardsServiceImpl rewardsService = new RewardsServiceImpl(gpsUtil, new RewardCentralRepository());
 		UserRepository userRepository = new UserRepository();
 		InternalTestHelper.setInternalUserNumber(0);
-		TourGuideService tourGuideService = new TourGuideService(gpsUtil, rewardsService,userRepository);
+		TourGuideServiceImpl tourGuideService = new TourGuideServiceImpl(gpsUtil, rewardsService,userRepository);
 		User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
 		User user2 = new User(UUID.randomUUID(), "jon2", "000", "jon2@tourGuide.com");
 
@@ -85,28 +80,28 @@ public class TestTourGuideService {
 
 	@Test
 	public void trackUser() throws Exception {
-		GpsUtilService gpsUtil = new GpsUtilService(new GpsUtilRepository());
-		RewardsService rewardsService = new RewardsService(gpsUtil, new RewardCentralRepository());
+		GpsUtilServiceImpl gpsUtil = new GpsUtilServiceImpl(new GpsUtilRepository());
+		RewardsServiceImpl rewardsService = new RewardsServiceImpl(gpsUtil, new RewardCentralRepository());
 		UserRepository userRepository = new UserRepository();
 		InternalTestHelper.setInternalUserNumber(0);
-		TourGuideService tourGuideService = new TourGuideService(gpsUtil, rewardsService,userRepository);
+		TourGuideServiceImpl tourGuideService = new TourGuideServiceImpl(gpsUtil, rewardsService,userRepository);
 
 		User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
-		VisitedLocation visitedLocation = (VisitedLocation) tourGuideService.trackUserLocation(user);
+		VisitedLocation visitedLocation = tourGuideService.trackUserLocation(user);
 		tourGuideService.tracker.stopTracking();
 		assertEquals(user.getUserId(), visitedLocation.userId);
 	}
 
 	@Test
 	public void getNearbyAttractions() throws Exception {
-		GpsUtilService gpsUtil = new GpsUtilService(new GpsUtilRepository());
-		RewardsService rewardsService = new RewardsService(gpsUtil, new RewardCentralRepository());
+		GpsUtilServiceImpl gpsUtil = new GpsUtilServiceImpl(new GpsUtilRepository());
+		RewardsServiceImpl rewardsService = new RewardsServiceImpl(gpsUtil, new RewardCentralRepository());
 		UserRepository userRepository = new UserRepository();
 		InternalTestHelper.setInternalUserNumber(0);
-		TourGuideService tourGuideService = new TourGuideService(gpsUtil, rewardsService,userRepository);
+		TourGuideServiceImpl tourGuideService = new TourGuideServiceImpl(gpsUtil, rewardsService,userRepository);
 
 		User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
-		VisitedLocation visitedLocation = (VisitedLocation) tourGuideService.trackUserLocation(user);
+		VisitedLocation visitedLocation = tourGuideService.trackUserLocation(user);
 		UserCloseAttractionsInfo closestAttractions = tourGuideService.searchFiveClosestAttractions(visitedLocation);
 
 		tourGuideService.tracker.stopTracking();
@@ -116,11 +111,11 @@ public class TestTourGuideService {
 
 @Test
 	public void getTripDeals() {
-		GpsUtilService gpsUtil = new GpsUtilService(new GpsUtilRepository());
-		RewardsService rewardsService = new RewardsService(gpsUtil, new RewardCentralRepository());
+		GpsUtilServiceImpl gpsUtil = new GpsUtilServiceImpl(new GpsUtilRepository());
+		RewardsServiceImpl rewardsService = new RewardsServiceImpl(gpsUtil, new RewardCentralRepository());
 		UserRepository userRepository = new UserRepository();
 		InternalTestHelper.setInternalUserNumber(0);
-		TourGuideService tourGuideService = new TourGuideService(gpsUtil, rewardsService,userRepository);
+		TourGuideServiceImpl tourGuideService = new TourGuideServiceImpl(gpsUtil, rewardsService,userRepository);
 
 		User user = new User(UUID.randomUUID(), "jon", "000", "jon@tourGuide.com");
 

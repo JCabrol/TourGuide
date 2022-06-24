@@ -10,15 +10,11 @@ import tourGuide.model.User;
 import tourGuide.repository.GpsUtilRepository;
 import tourGuide.repository.RewardCentralRepository;
 import tourGuide.repository.UserRepository;
-import tourGuide.service.GpsUtilService;
-import tourGuide.service.RewardsService;
-import tourGuide.service.TourGuideService;
+import tourGuide.service.*;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertTrue;
@@ -54,13 +50,13 @@ public class TestPerformance {
 
     @Test
     public void highVolumeTrackLocation() throws Exception {
-        GpsUtilService gpsUtilService = new GpsUtilService(new GpsUtilRepository());
-        RewardsService rewardsService = new RewardsService(gpsUtilService, new RewardCentralRepository());
+        GpsUtilServiceImpl gpsUtilService = new GpsUtilServiceImpl(new GpsUtilRepository());
+        RewardsServiceImpl rewardsService = new RewardsServiceImpl(gpsUtilService, new RewardCentralRepository());
         UserRepository userRepository = new UserRepository();
 
         // Users should be incremented up to 100,000, and test finishes within 15 minutes
 
-        TourGuideService tourGuideService = new TourGuideService(gpsUtilService, rewardsService, userRepository);
+        TourGuideServiceImpl tourGuideService = new TourGuideServiceImpl(gpsUtilService, rewardsService, userRepository);
         List<User> allUsers = tourGuideService.getAllUsers();
 
         StopWatch stopWatch = new StopWatch();
@@ -75,24 +71,23 @@ public class TestPerformance {
 
     @Test
     public void highVolumeGetRewards() throws Exception {
-        GpsUtilService gpsUtil = new GpsUtilService(new GpsUtilRepository());
-        RewardsService rewardsService = new RewardsService(gpsUtil, new RewardCentralRepository());
+        GpsUtilServiceImpl gpsUtil = new GpsUtilServiceImpl(new GpsUtilRepository());
+        RewardsServiceImpl rewardsService = new RewardsServiceImpl(gpsUtil, new RewardCentralRepository());
         UserRepository userRepository = new UserRepository();
 
         // Users should be incremented up to 100,000, and test finishes within 20 minutes
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        TourGuideService tourGuideService = new TourGuideService(gpsUtil, rewardsService, userRepository);
+        TourGuideServiceImpl tourGuideService = new TourGuideServiceImpl(gpsUtil, rewardsService, userRepository);
 
 
         Attraction attraction = gpsUtil.getAttractions().get(0);
         List<User> allUsers = tourGuideService.getAllUsers();
         allUsers.forEach(u -> tourGuideService.addUserNewVisitedLocation(u, new VisitedLocation(u.getUserId(), attraction, new Date())));
-//        tourGuideService.calculateAllRewards(allUsers);
         allUsers.forEach(u -> {
             try {
-                rewardsService.calculateRewards(u,tourGuideService.getUserLastVisitedLocation(u));
+                rewardsService.calculateRewards(u, tourGuideService.getUserLastVisitedLocation(u));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
