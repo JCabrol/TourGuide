@@ -18,7 +18,7 @@ public class User {
     private List<UserReward> userRewards = new ArrayList<>();
     private UserPreferences userPreferences = new UserPreferences();
     private List<Provider> tripDeals = new ArrayList<>();
-
+private int numberOfModifications = 0;
     public User(UUID userId, String userName, String phoneNumber, String emailAddress) {
         this.userId = userId;
         this.userName = userName;
@@ -74,16 +74,22 @@ public class User {
 //    }
 
         public void addUserReward(UserReward userReward) {
-        if (userRewards.stream().filter(r -> !r.attraction.attractionName.equals(userReward.attraction.attractionName)).count() == 0) {
             userRewards.add(userReward);
+            numberOfModifications++;
+//            System.out.println(Thread.currentThread().getName()+" Rewards for attraction " + userReward.attraction.attractionName + " added to user "+this.userName);
+
         }
-    }
+
     public void setUserRewards(List<UserReward> userRewardsList) {
         this.userRewards = userRewardsList;
     }
 
     public List<UserReward> getUserRewards() {
         return userRewards;
+    }
+
+    public int getNumberOfModifications() {
+        return numberOfModifications;
     }
 
     public void setUserPreferences(UserPreferences userPreferences) {

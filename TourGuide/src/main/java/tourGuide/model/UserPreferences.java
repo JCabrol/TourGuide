@@ -9,13 +9,13 @@ import org.javamoney.moneta.Money;
 public class UserPreferences {
 	
 	private int attractionProximity = Integer.MAX_VALUE;
-	private CurrencyUnit currency = Monetary.getCurrency("USD");
+	private final CurrencyUnit currency = Monetary.getCurrency("USD");
 	private Money lowerPricePoint = Money.of(0, currency);
 	private Money highPricePoint = Money.of(Integer.MAX_VALUE, currency);
-	private int tripDuration = 1;
+	private int tripDuration = 5;
 	private int ticketQuantity = 1;
-	private int numberOfAdults = 1;
-	private int numberOfChildren = 0;
+	private int numberOfAdults = 2;
+	private int numberOfChildren = 2;
 	
 	public UserPreferences() {
 	}

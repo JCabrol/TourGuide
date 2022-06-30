@@ -5,6 +5,7 @@ import tourGuide.model.User;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,9 @@ public class UserRepository {
             throw new Exception("The model with userName " + username + " was not found.");
         }
     }
-
+public User getUserFromId(UUID userId){
+       return getUserList().stream().parallel().filter(user->user.getUserId()==userId).collect(Collectors.toList()).get(0);
+}
     public void addUser(User user) //throws Exception {
     {
 //        if (!internalUserMap.containsKey(user.getUserName())) {

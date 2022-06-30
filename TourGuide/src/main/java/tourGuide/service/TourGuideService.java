@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface TourGuideService {
+
     List<UserReward> getUserRewards(User user);
 
     VisitedLocation getUserLocation(String userName) throws Exception;
@@ -32,6 +33,8 @@ public interface TourGuideService {
     VisitedLocation trackUserLocation(User user) throws InterruptedException;
 
     Map<String, Location> getAllCurrentLocations();
+
+    List<VisitedLocation> trackAllUsers(List<User> allUsers);
 
     List<VisitedLocation> trackAllUserLocation(List<User> allUsers) throws Exception;
 }

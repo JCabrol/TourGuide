@@ -34,7 +34,9 @@ public class TourGuideServiceImpl implements TourGuideService {
     public final Tracker tracker;
     ExecutorService executorServiceTourGuide = Executors.newCachedThreadPool();
     boolean testMode = true;
-    public static final int USER_CONSUMER_COUNT = 50;
+    public static final int USER_CONSUMER_COUNT = 30;
+    ForkJoinPool forkJoinPool = new ForkJoinPool(15);
+
 
     public TourGuideServiceImpl(GpsUtilServiceImpl gpsUtilService, RewardsServiceImpl rewardsService, UserRepository userRepository) {
         this.gpsUtilService = gpsUtilService;
@@ -102,6 +104,9 @@ public class TourGuideServiceImpl implements TourGuideService {
         return userRepository.getUser(userName);
     }
 
+    private User getUserFromId(UUID userId){
+        return userRepository.getUserFromId(userId);
+    }
     @Override
     public List<User> getAllUsers() {
         return userRepository.getUserList();
@@ -122,10 +127,10 @@ public class TourGuideServiceImpl implements TourGuideService {
     }
 
     @Override
-    public VisitedLocation trackUserLocation(User user) throws InterruptedException {
+    public VisitedLocation trackUserLocation(User user)  {
         UUID userId = user.getUserId();
         VisitedLocation visitedLocation = gpsUtilService.getUserLocation(userId);
-        rewardsService.calculateRewards(user, visitedLocation);
+        rewardsService.calculateRewards(user);
         addUserNewVisitedLocation(user, visitedLocation);
         return visitedLocation;
     }
@@ -138,6 +143,33 @@ public class TourGuideServiceImpl implements TourGuideService {
                 .parallel()
                 .forEach(user -> result.put(user.getUserId().toString(), getUserLastVisitedLocation(user).location));
         return result;
+    }
+
+
+    @Override
+    public List<VisitedLocation> trackAllUsers(List<User> allUsers)  {
+        BlockingQueue<VisitedLocation> visitedLocationQueue = new LinkedBlockingQueue<>();
+       List<VisitedLocation> visitedLocations = forkJoinPool.invoke(new CalculateLocationTask(allUsers, this.gpsUtilService,visitedLocationQueue));
+      consumeVisitedLocationQueue(visitedLocationQueue);
+      return visitedLocations;
+    }
+
+    private void consumeVisitedLocationQueue(BlockingQueue<VisitedLocation> visitedLocationQueue) {
+        for (int futureNumber = 0; futureNumber < USER_CONSUMER_COUNT; futureNumber++) {
+            executorServiceTourGuide.submit(() -> {
+                try {
+                    while (!visitedLocationQueue.isEmpty()) {
+                        VisitedLocation visitedLocation = visitedLocationQueue.take();
+
+                            User user = getUserFromId(visitedLocation.userId);
+                            addUserNewVisitedLocation(user,visitedLocation);
+                            rewardsService.calculateRewards(user);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     @Override
@@ -171,10 +203,9 @@ public class TourGuideServiceImpl implements TourGuideService {
                         User user = userQueue.take();
                         try {
                             VisitedLocation visitedLocation = trackUserLocation(user);
-                            allVisitedLocations.add(visitedLocation);
-                        } finally {
+                            allVisitedLocations.add(visitedLocation);}
+                        finally {
                             userLatch.countDown();
-//                            System.out.println("Waiting for " + userLatch.getCount() + " users to finish");
                         }
                     }
                 } catch (Exception e) {
@@ -184,37 +215,6 @@ public class TourGuideServiceImpl implements TourGuideService {
         }
         return allVisitedLocations;
     }
-
-//    public void calculateAllRewards(List<User> allUsers) throws Exception {
-//        BlockingQueue<User> userQueue = new LinkedBlockingQueue<>();
-//        int userCount = InternalTestHelper.getInternalUserNumber();
-//        publishUser(allUsers, userQueue);
-//        CountDownLatch userLatch = new CountDownLatch(userCount);
-//        calculateRewardsFromUserQueue(userLatch, userQueue);
-//        userLatch.await();
-//    }
-//
-//    private void calculateRewardsFromUserQueue(CountDownLatch userLatch, BlockingQueue<User> userQueue) throws InterruptedException {
-//        for (int futureNumber = 0; futureNumber < USER_CONSUMER_COUNT; futureNumber++) {
-//            executorServiceTourGuide.submit(() -> {
-//                try {
-//                    while (userLatch.getCount() != 0) {
-//                        User user = userQueue.take();
-//                        try {
-//                            rewardsService.calculateRewards2(user, getUserLastVisitedLocation(user));
-//                        } finally {
-//                            userLatch.countDown();
-////                            System.out.println("Waiting for " + userLatch.getCount() + " users to finish");
-//                        }
-//                    }
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            });
-//        }
-//        TimeUnit.MILLISECONDS.sleep(30000);
-//    }
-
 
     private void addShutDownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread(tracker::stopTracking));

@@ -10,11 +10,16 @@ import tourGuide.model.User;
 import tourGuide.repository.GpsUtilRepository;
 import tourGuide.repository.RewardCentralRepository;
 import tourGuide.repository.UserRepository;
-import tourGuide.service.*;
+import tourGuide.service.GpsUtilServiceImpl;
+import tourGuide.service.RewardsServiceImpl;
+import tourGuide.service.TourGuideServiceImpl;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertTrue;
@@ -25,7 +30,7 @@ public class TestPerformance {
     @Before
     public void init() {
         Locale.setDefault(locale);
-        InternalTestHelper.setInternalUserNumber(100000);
+        InternalTestHelper.setInternalUserNumber(10000);
     }
     /*
      * A note on performance improvements:
@@ -49,7 +54,7 @@ public class TestPerformance {
 
 
     @Test
-    public void highVolumeTrackLocation() throws Exception {
+    public void highVolumeTrackLocation() {
         GpsUtilServiceImpl gpsUtilService = new GpsUtilServiceImpl(new GpsUtilRepository());
         RewardsServiceImpl rewardsService = new RewardsServiceImpl(gpsUtilService, new RewardCentralRepository());
         UserRepository userRepository = new UserRepository();
@@ -61,8 +66,7 @@ public class TestPerformance {
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-
-        tourGuideService.trackAllUserLocation(allUsers);
+      tourGuideService.trackAllUsers(allUsers);
         stopWatch.stop();
         tourGuideService.tracker.stopTracking();
         System.out.println("highVolumeTrackLocation: Time Elapsed: " + TimeUnit.MILLISECONDS.toSeconds(stopWatch.getTime()) + " seconds.");
@@ -81,18 +85,18 @@ public class TestPerformance {
         stopWatch.start();
         TourGuideServiceImpl tourGuideService = new TourGuideServiceImpl(gpsUtil, rewardsService, userRepository);
 
-
         Attraction attraction = gpsUtil.getAttractions().get(0);
         List<User> allUsers = tourGuideService.getAllUsers();
-        allUsers.forEach(u -> tourGuideService.addUserNewVisitedLocation(u, new VisitedLocation(u.getUserId(), attraction, new Date())));
-        allUsers.forEach(u -> {
-            try {
-                rewardsService.calculateRewards(u, tourGuideService.getUserLastVisitedLocation(u));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
+        for (User user : allUsers) {
+            VisitedLocation visitedLocation = new VisitedLocation(user.getUserId(), attraction, new Date());
+            tourGuideService.addUserNewVisitedLocation(user, visitedLocation);
+
+        }
+
+        allUsers.forEach(rewardsService::calculateRewards);
+
         TimeUnit.MILLISECONDS.sleep(5000);
+
         for (User user : allUsers) {
             assertTrue(user.getUserRewards().size() > 0);
         }
