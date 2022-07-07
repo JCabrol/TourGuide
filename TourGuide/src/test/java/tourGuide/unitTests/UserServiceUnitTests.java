@@ -205,6 +205,27 @@ public class UserServiceUnitTests {
         //and the expected methods have been called with expected arguments
         verify(userRepository, Mockito.times(1)).getUserList();
     }
+    @DisplayName("GIVEN an empty list of users " +
+            "WHEN getAllUser is called " +
+            "THEN an empty list is returned.")
+    @Tag("getAllUserTest")
+    @Test
+    public void getAllUserEmptyTest2() {
+        //GIVEN
+        //an empty list of users
+        List<User> userList = new ArrayList<>();
+        when(userRepository.getUserList()).thenReturn(userList);
+
+        //WHEN
+        //getAllUser is called
+        List<User> result = userService.getAllUsers();
+
+        //THEN
+        //an empty list is returned
+        assertEquals(0,result.size());
+        //and the expected methods have been called with expected arguments
+        verify(userRepository, Mockito.times(1)).getUserList();
+    }
 
 
 }
