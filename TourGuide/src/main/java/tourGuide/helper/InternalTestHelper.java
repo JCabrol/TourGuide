@@ -1,7 +1,5 @@
 package tourGuide.helper;
 
-import java.util.concurrent.CountDownLatch;
-
 public class InternalTestHelper {
 
     // Set this default up to 100,000 for testing

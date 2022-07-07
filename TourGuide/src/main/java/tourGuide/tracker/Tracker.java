@@ -3,8 +3,10 @@ package tourGuide.tracker;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import tourGuide.model.User;
 import tourGuide.service.TourGuideService;
+import tourGuide.service.UserService;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -12,17 +14,25 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Tracker extends Thread {
+
+
+//    @Autowired
+//    TourGuideService tourGuideService;
     private final Logger logger = LoggerFactory.getLogger(Tracker.class);
     private static final long trackingPollingInterval = TimeUnit.MINUTES.toSeconds(5);
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final TourGuideService tourGuideService;
     private boolean stop = false;
 
+//    public Tracker() {
+//        executorService.submit(this);
+//    }
+//
     public Tracker(TourGuideService tourGuideService) {
         this.tourGuideService = tourGuideService;
-
         executorService.submit(this);
     }
+
 
     /**
      * Assures to shut down the Tracker thread
@@ -45,7 +55,6 @@ public class Tracker extends Thread {
             logger.debug("Begin Tracker. Tracking " + users.size() + " users.");
             stopWatch.start();
             tourGuideService.trackAllUsers(users);
-
             stopWatch.stop();
             logger.debug("Tracker Time Elapsed: " + TimeUnit.MILLISECONDS.toSeconds(stopWatch.getTime()) + " seconds.");
             stopWatch.reset();
@@ -56,7 +65,6 @@ public class Tracker extends Thread {
                 break;
             }
         }
-
     }
 
 }

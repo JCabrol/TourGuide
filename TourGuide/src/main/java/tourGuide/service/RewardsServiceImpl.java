@@ -3,6 +3,7 @@ package tourGuide.service;
 import gpsUtil.location.Attraction;
 import gpsUtil.location.Location;
 import gpsUtil.location.VisitedLocation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tourGuide.model.RewardElements;
 import tourGuide.model.User;
@@ -12,7 +13,6 @@ import tourGuide.repository.RewardCentralRepository;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
@@ -22,22 +22,26 @@ public class RewardsServiceImpl implements RewardsService {
 
     private static final double STATUTE_MILES_PER_NAUTICAL_MILE = 1.15077945;
     // proximity in miles
-
-    private final int defaultProximityBuffer = 30;
+    private final int defaultProximityBuffer = 200;
     private int proximityBuffer = defaultProximityBuffer;
-    private final int attractionProximityRange = 200;
-    private final GpsUtilService gpsUtilService;
-    private final RewardCentralRepository rewardCentralRepository;
+
+
+@Autowired
+    private GpsUtilService gpsUtilService;
+
+@Autowired
+    private RewardCentralRepository rewardCentralRepository;
+
     private List<Attraction> attractionList;
+
     private final ExecutorService executorServiceRewards = Executors.newCachedThreadPool();
     private final ForkJoinPool forkJoinPool = new ForkJoinPool(20);
 
-
-    public RewardsServiceImpl(GpsUtilService gpsUtilService, RewardCentralRepository rewardCentralRepository) {
-        this.gpsUtilService = gpsUtilService;
-        this.rewardCentralRepository = rewardCentralRepository;
+@Override
+    public void initializeRewardsService() {
         this.attractionList = gpsUtilService.getAttractions();
     }
+
 
     @Override
     public List<Attraction> getAttractionList() {
@@ -60,13 +64,8 @@ public class RewardsServiceImpl implements RewardsService {
     }
 
     @Override
-    public int getAttractionRewardPoints(UUID attractionId, UUID userId) {
-        return rewardCentralRepository.getAttractionRewardPoints(attractionId, userId);
-    }
-
-    @Override
     public void calculateRewards(User user) {
-        List<RewardElements> rewardElementsList = forkJoinPool.invoke(new CalculatingRewardsTask(user, attractionList, this));
+        List<RewardElements> rewardElementsList = forkJoinPool.invoke(new CalculatingRewardsTask(user, attractionList,this));
         if (rewardElementsList.size() != 0) {
             executorServiceRewards.submit(() -> {
                 for (RewardElements rewardElements : rewardElementsList) {
@@ -85,16 +84,6 @@ public class RewardsServiceImpl implements RewardsService {
                 .limit(5)
                 .forEach(nearbyAttractions::add);
         return nearbyAttractions;
-    }
-
-
-    @Override
-    public void addUserNewRewards(User user, VisitedLocation lastLocation, Attraction attraction) {
-        if (isNotInRewardsList(attraction.attractionName, user)) {
-            if (nearAttraction(lastLocation, attraction)) {
-                user.addUserReward(new UserReward(lastLocation, attraction, getRewardPoints(attraction, user)));
-            }
-        }
     }
 
     @Override

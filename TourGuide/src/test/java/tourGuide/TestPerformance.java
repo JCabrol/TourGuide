@@ -4,34 +4,48 @@ import gpsUtil.location.Attraction;
 import gpsUtil.location.VisitedLocation;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Before;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringRunner;
 import tourGuide.helper.InternalTestHelper;
 import tourGuide.model.User;
-import tourGuide.repository.GpsUtilRepository;
-import tourGuide.repository.RewardCentralRepository;
-import tourGuide.repository.UserRepository;
-import tourGuide.service.GpsUtilServiceImpl;
-import tourGuide.service.RewardsServiceImpl;
-import tourGuide.service.TourGuideServiceImpl;
+import tourGuide.service.RewardsService;
+import tourGuide.service.TourGuideService;
+import tourGuide.service.UserService;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
+
+@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class TestPerformance {
-    private static final Locale locale = new Locale("en", "US");
+
+    @Autowired
+    private TourGuideService tourGuideService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private RewardsService rewardsService;
+
 
     @Before
     public void init() {
-        Locale.setDefault(locale);
         InternalTestHelper.setInternalUserNumber(10000);
     }
+
     /*
      * A note on performance improvements:
      *
@@ -52,44 +66,40 @@ public class TestPerformance {
      *          assertTrue(TimeUnit.MINUTES.toSeconds(20) >= TimeUnit.MILLISECONDS.toSeconds(stopWatch.getTime()));
      */
 
-
+    //    @DirtiesContext(methodMode = AFTER_METHOD)
     @Test
     public void highVolumeTrackLocation() {
-        GpsUtilServiceImpl gpsUtilService = new GpsUtilServiceImpl(new GpsUtilRepository());
-        RewardsServiceImpl rewardsService = new RewardsServiceImpl(gpsUtilService, new RewardCentralRepository());
-        UserRepository userRepository = new UserRepository();
 
         // Users should be incremented up to 100,000, and test finishes within 15 minutes
 
-        TourGuideServiceImpl tourGuideService = new TourGuideServiceImpl(gpsUtilService, rewardsService, userRepository);
-        List<User> allUsers = tourGuideService.getAllUsers();
+        List<User> allUsers = userService.getAllUsers();
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-      tourGuideService.trackAllUsers(allUsers);
+
+        List<VisitedLocation> allVisitedLocations = tourGuideService.trackAllUsers(allUsers);
         stopWatch.stop();
-        tourGuideService.tracker.stopTracking();
+        tourGuideService.getTracker().stopTracking();
         System.out.println("highVolumeTrackLocation: Time Elapsed: " + TimeUnit.MILLISECONDS.toSeconds(stopWatch.getTime()) + " seconds.");
+
+        assertEquals(allUsers.size(), allVisitedLocations.size());
         assertTrue(TimeUnit.MINUTES.toSeconds(15) >= TimeUnit.MILLISECONDS.toSeconds(stopWatch.getTime()));
     }
 
+    //    @DirtiesContext(methodMode = AFTER_METHOD)
     @Test
     public void highVolumeGetRewards() throws Exception {
-        GpsUtilServiceImpl gpsUtil = new GpsUtilServiceImpl(new GpsUtilRepository());
-        RewardsServiceImpl rewardsService = new RewardsServiceImpl(gpsUtil, new RewardCentralRepository());
-        UserRepository userRepository = new UserRepository();
 
         // Users should be incremented up to 100,000, and test finishes within 20 minutes
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        TourGuideServiceImpl tourGuideService = new TourGuideServiceImpl(gpsUtil, rewardsService, userRepository);
 
-        Attraction attraction = gpsUtil.getAttractions().get(0);
-        List<User> allUsers = tourGuideService.getAllUsers();
+        Attraction attraction = rewardsService.getAttractionList().get(0);
+        List<User> allUsers = userService.getAllUsers();
         for (User user : allUsers) {
             VisitedLocation visitedLocation = new VisitedLocation(user.getUserId(), attraction, new Date());
-            tourGuideService.addUserNewVisitedLocation(user, visitedLocation);
+            userService.addUserNewVisitedLocation(user, visitedLocation);
 
         }
 
@@ -102,7 +112,7 @@ public class TestPerformance {
         }
 
         stopWatch.stop();
-        tourGuideService.tracker.stopTracking();
+        tourGuideService.getTracker().stopTracking();
 
         System.out.println("highVolumeGetRewards: Time Elapsed: " + TimeUnit.MILLISECONDS.toSeconds(stopWatch.getTime()) + " seconds.");
         assertTrue(TimeUnit.MINUTES.toSeconds(20) >= TimeUnit.MILLISECONDS.toSeconds(stopWatch.getTime()));

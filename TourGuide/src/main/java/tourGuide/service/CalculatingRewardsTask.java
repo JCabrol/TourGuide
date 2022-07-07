@@ -17,7 +17,7 @@ public class CalculatingRewardsTask extends RecursiveTask<List<RewardElements>> 
     private final RewardsService rewardsService;
 
 
-    public CalculatingRewardsTask(User user,List<Attraction> attractionList,RewardsService rewardsService) {
+    public CalculatingRewardsTask(User user, List<Attraction> attractionList, RewardsService rewardsService) {
         this.user = user;
         this.attractionList = attractionList;
         this.rewardsService = rewardsService;
@@ -28,12 +28,12 @@ public class CalculatingRewardsTask extends RecursiveTask<List<RewardElements>> 
         List<RewardElements> rewardElementsList = new ArrayList<>();
 
         if (attractionList.size() == 1) {
-            for(VisitedLocation visitedLocation: user.getVisitedLocations()) {
+            for (VisitedLocation visitedLocation : user.getVisitedLocations()) {
 
-                if (rewardsService.nearAttraction(visitedLocation,attractionList.get(0))) {
-                    if(rewardsService.isNotInRewardsList(attractionList.get(0).attractionName, user)) {
+                if (rewardsService.nearAttraction(visitedLocation, attractionList.get(0))) {
+                    if (rewardsService.isNotInRewardsList(attractionList.get(0).attractionName, user)) {
                         Attraction attraction = attractionList.get(0);
-                        rewardElementsList.add(new RewardElements(user, visitedLocation, attraction));
+                        rewardElementsList.add(new RewardElements(visitedLocation, attraction));
                     }
                 }
             }
@@ -42,17 +42,16 @@ public class CalculatingRewardsTask extends RecursiveTask<List<RewardElements>> 
             int midPoint = attractionList.size() / 2;
             CalculatingRewardsTask left =
                     new CalculatingRewardsTask(
-                          user,attractionList.subList(0, midPoint),rewardsService);
+                            user, attractionList.subList(0, midPoint), rewardsService);
 
             CalculatingRewardsTask right =
                     new CalculatingRewardsTask(
-                            user,attractionList.subList(midPoint, attractionList.size()),rewardsService);
+                            user, attractionList.subList(midPoint, attractionList.size()), rewardsService);
             left.fork();
             List<RewardElements> rightResult = right.compute();
             List<RewardElements> leftResult = left.join();
             rewardElementsList.addAll(rightResult);
             rewardElementsList.addAll(leftResult);
-
         }
         return rewardElementsList;
     }

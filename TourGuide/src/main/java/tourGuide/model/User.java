@@ -58,9 +58,9 @@ private int numberOfModifications = 0;
         return latestLocationTimestamp;
     }
 
-//    public void addToVisitedLocations(VisitedLocation visitedLocation) {
-//        visitedLocations.add(visitedLocation);
-//    }
+    public void addToVisitedLocations(VisitedLocation visitedLocation) {
+        visitedLocations.add(visitedLocation);
+    }
 
     public void setVisitedLocations(List<VisitedLocation> visitedLocations) {
         this.visitedLocations = visitedLocations;

@@ -3,157 +3,193 @@ package tourGuide.service;
 import gpsUtil.location.Attraction;
 import gpsUtil.location.Location;
 import gpsUtil.location.VisitedLocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tourGuide.helper.InternalTestHelper;
+import tourGuide.exception.ObjectNotFoundException;
 import tourGuide.model.CloseAttraction;
 import tourGuide.model.User;
 import tourGuide.model.UserCloseAttractionsInfo;
-import tourGuide.model.UserReward;
-import tourGuide.repository.UserRepository;
 import tourGuide.tracker.Tracker;
-import tripPricer.Provider;
-import tripPricer.TripPricer;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
+
+@Slf4j
 @Service
 public class TourGuideServiceImpl implements TourGuideService {
 
-    private final Logger logger = LoggerFactory.getLogger(TourGuideServiceImpl.class);
-    private final GpsUtilServiceImpl gpsUtilService;
-    private final RewardsServiceImpl rewardsService;
-    private final UserRepository userRepository;
-    private final TripPricer tripPricer = new TripPricer();
-    public final Tracker tracker;
-    ExecutorService executorServiceTourGuide = Executors.newCachedThreadPool();
-    boolean testMode = true;
-    public static final int USER_CONSUMER_COUNT = 30;
-    ForkJoinPool forkJoinPool = new ForkJoinPool(15);
+    @Autowired
+    private GpsUtilService gpsUtilService;
+    @Autowired
+    private RewardsService rewardsService;
+    @Autowired
+    private UserService userService;
+
+    //The tracker is used to track user locations. After finish, it sleeps five minutes and starts again.
+    private Tracker tracker;
+    public ExecutorService executorServiceTourGuide = Executors.newCachedThreadPool();
+    public ForkJoinPool forkJoinPool = new ForkJoinPool(30);
+    //This int is used to control the number of threads working at the same time in the executorService
+    public static final int USER_CONSUMER_COUNT = 15;
 
 
-    public TourGuideServiceImpl(GpsUtilServiceImpl gpsUtilService, RewardsServiceImpl rewardsService, UserRepository userRepository) {
-        this.gpsUtilService = gpsUtilService;
-        this.rewardsService = rewardsService;
-        this.userRepository = userRepository;
-
-        if (testMode) {
-            logger.info("TestMode enabled");
-            logger.debug("Initializing users");
-            initializeInternalUsers();
-            logger.debug("Finished initializing users");
-        }
+    /**
+     * Permit to start a new tracker which is tracking all user's locations every fifteen minutes,
+     * the function also add shutDownHook to permit closing tracker's executorService
+     */
+    @Override
+    public void initializeTourGuideService() {
         tracker = new Tracker(this);
         addShutDownHook();
     }
 
+    /**
+     * Returns the service's tracker
+     *
+     * @return the tracker attached to this class
+     */
     @Override
-    public List<UserReward> getUserRewards(User user) {
-        return user.getUserRewards();
+    public Tracker getTracker() {
+        return tracker;
     }
 
-    @Override
-    public VisitedLocation getUserLocation(String userName) throws Exception {
-        User user = getUser(userName);
-        return trackUserLocation(user);
+    /**
+     * This method adds ShutDownHook to tracker to permit closing tracker's thread
+     */
+    private void addShutDownHook() {
+        Runtime.getRuntime().addShutdownHook(new Thread(tracker::stopTracking));
     }
 
+    /**
+     * Get a visitedLocation by user,
+     * either by getting its last visitedLocation in its visitedLocation's list (the list is updated all fifteen minutes by tracker),
+     * either by tracking the actual user's location (if its visitedLocation's list is empty).
+     *
+     * @param user the user whose location is sought
+     * @return actual user location if its list of visitedLocation is empty otherwise its last visitedLocation
+     */
     @Override
-    public VisitedLocation getUserLastVisitedLocation(User user) {
-        VisitedLocation lastVisitedLocation = null;
-        List<VisitedLocation> userVisitedLocationList = user.getVisitedLocations();
-        if (userVisitedLocationList.size() != 0) {
-            lastVisitedLocation = userVisitedLocationList
-                    .stream()
-                    .parallel()
-                    .filter(visitedLocation -> visitedLocation.timeVisited.equals(user.getLatestLocationTimestamp()))
-                    .collect(Collectors.toList())
-                    .get(0);
-        }
-        return lastVisitedLocation;
+    public VisitedLocation getUserLocation(User user) {
+        return (user.getVisitedLocations().size() > 0) ?
+                userService.getUserLastVisitedLocation(user) :
+                trackUserLocation(user);
     }
 
+    /**
+     * Track a user's location calling gpsUtilService and add it to its visitedLocation list,
+     * rewards are calculating calling rewardsService and added if applicable.
+     *
+     * @param user the user whose location is tracked
+     * @return the actual user VisitedLocation
+     */
     @Override
-    public void addUserNewVisitedLocation(User user, VisitedLocation newVisitedLocation) {
-        List<VisitedLocation> userVisitedLocationList = user.getVisitedLocations();
-        userVisitedLocationList.add(newVisitedLocation);
-        user.setVisitedLocations(userVisitedLocationList);
-        user.setLatestLocationTimestamp(newVisitedLocation.timeVisited);
+    public VisitedLocation trackUserLocation(User user) {
+        UUID userId = user.getUserId();
+        VisitedLocation visitedLocation = gpsUtilService.getUserLocation(userId);
+        rewardsService.calculateRewards(user);
+        user.addToVisitedLocations(visitedLocation);
+        return visitedLocation;
     }
 
+    /**
+     * Get the five closest attractions from a visitedLocation, whatever the distance,
+     * and return the user's location,
+     * and, for each attraction, its name, its location, the distance from the user's location
+     * and the reward points awarded for this attraction
+     *
+     * @param visitedLocation a VisitedLocation object
+     * @throws ObjectNotFoundException when the user is not found by its id
+     * @return a UserCloseAttractionsInfo object containing all information about the five closest locations
+     */
     @Override
-    public UserCloseAttractionsInfo searchFiveClosestAttractions(VisitedLocation visitedLocation) {
+    public UserCloseAttractionsInfo searchFiveClosestAttractions(VisitedLocation visitedLocation) throws ObjectNotFoundException {
         List<Attraction> attractionsAndDistancesFromFiveClosestLocation = rewardsService.searchFiveClosestAttractionsMap(visitedLocation);
         UserCloseAttractionsInfo userCloseAttractionsInfo = new UserCloseAttractionsInfo(visitedLocation.location.latitude, visitedLocation.location.longitude);
         List<CloseAttraction> fiveClosestAttractions = new ArrayList<>();
+        User user = userService.getUserById(visitedLocation.userId);
         attractionsAndDistancesFromFiveClosestLocation
                 .forEach((attraction)
-                        -> fiveClosestAttractions.add(new CloseAttraction(attraction.attractionName, attraction.latitude, attraction.longitude, rewardsService.getDistance(attraction, visitedLocation.location), rewardsService.getAttractionRewardPoints(attraction.attractionId, visitedLocation.userId))));
+                        -> fiveClosestAttractions.add(new CloseAttraction(attraction.attractionName, attraction.latitude, attraction.longitude, rewardsService.getDistance(attraction, visitedLocation.location), rewardsService.getRewardPoints(attraction, user))));
         userCloseAttractionsInfo.setCloseAttractions(fiveClosestAttractions);
         return userCloseAttractionsInfo;
     }
 
-    @Override
-    public User getUser(String userName) throws Exception {
-        return userRepository.getUser(userName);
-    }
-
-    private User getUserFromId(UUID userId){
-        return userRepository.getUserFromId(userId);
-    }
+    /**
+     * Get all the user registered
+     *
+     * @return a list of user containing all users registered
+     */
     @Override
     public List<User> getAllUsers() {
-        return userRepository.getUserList();
+        return userService.getAllUsers();
     }
 
-    @Override
-    public void addUser(User user) {
-        userRepository.addUser(user);
-    }
-
-    @Override
-    public List<Provider> getTripDeals(User user) {
-        int cumulativeRewardPoints = user.getUserRewards().stream().mapToInt(UserReward::getRewardPoints).sum();
-        List<Provider> providers = tripPricer.getPrice(tripPricerApiKey, user.getUserId(), user.getUserPreferences().getNumberOfAdults(),
-                user.getUserPreferences().getNumberOfChildren(), user.getUserPreferences().getTripDuration(), cumulativeRewardPoints);
-        user.setTripDeals(providers);
-        return providers;
-    }
-
-    @Override
-    public VisitedLocation trackUserLocation(User user)  {
-        UUID userId = user.getUserId();
-        VisitedLocation visitedLocation = gpsUtilService.getUserLocation(userId);
-        rewardsService.calculateRewards(user);
-        addUserNewVisitedLocation(user, visitedLocation);
-        return visitedLocation;
-    }
-
+    /**
+     * Get the current location for each user and returns the result in a hashmap.
+     * The current location is returned by the function getUserLocation,
+     * which returns the last VisitedLocation if there is one (its actualised all fifteen minutes)
+     * or track the location if there is not any VisitedLocation registered
+     *
+     * @return a HashMap containing all the users' id as key and all their location as value
+     */
     @Override
     public Map<String, Location> getAllCurrentLocations() {
         Map<String, Location> result = new HashMap<>();
-        getAllUsers()
+
+        userService.getAllUsers()
                 .stream()
                 .parallel()
-                .forEach(user -> result.put(user.getUserId().toString(), getUserLastVisitedLocation(user).location));
+                .forEach(user -> result.put(user.getUserId().toString(), getUserLocation(user).location));
         return result;
     }
 
-
+    /**
+     * Track the location of all the users in the given list,
+     * this method is used by the tracker.
+     * It uses the forkJoinPool and a LinkedBlockingQueue to run threads concurrently,
+     * so the function is faster and permit tracking 100 000 users in about 10 minutes
+     *
+     * @param allUsers the user list containing all users to track
+     * @return a list of all the visitedLocation tracked
+     */
     @Override
-    public List<VisitedLocation> trackAllUsers(List<User> allUsers)  {
+    public List<VisitedLocation> trackAllUsers(List<User> allUsers) {
         BlockingQueue<VisitedLocation> visitedLocationQueue = new LinkedBlockingQueue<>();
-       List<VisitedLocation> visitedLocations = forkJoinPool.invoke(new CalculateLocationTask(allUsers, this.gpsUtilService,visitedLocationQueue));
-      consumeVisitedLocationQueue(visitedLocationQueue);
-      return visitedLocations;
+        List<VisitedLocation> visitedLocations = forkJoinPool.invoke(new CalculateLocationTask(allUsers, this.gpsUtilService));
+        executorServiceTourGuide.submit(() -> publishVisitedLocationQueue(visitedLocations, visitedLocationQueue));
+        consumeVisitedLocationQueue(visitedLocationQueue);
+        return visitedLocations;
     }
 
+    /**
+     * This method is a producer method,
+     * it publishes all visitedLocations from the given list in a linkedBlockingQueue,
+     * so the data can be consumed from this queue, controlling the number of threads.
+     * If the queue is full, the method will wait and continue when there will be places again.
+     *
+     * @param visitedLocations     the visitedLocation list to publish into the queue
+     * @param visitedLocationQueue the linkedBlockingQueue within visitedLocations are published
+     */
+    private void publishVisitedLocationQueue(List<VisitedLocation> visitedLocations, BlockingQueue<VisitedLocation> visitedLocationQueue) {
+        visitedLocations
+                .forEach(visitedLocation -> {
+                    try {
+                        visitedLocationQueue.put(visitedLocation);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
+
+    /**
+     * This method is a consumer method,
+     * it takes all visitedLocations from the linkedBlockingQueue and add it to the concerned user.
+     * It also calculates rewards for the user.
+     *
+     * @param visitedLocationQueue the linkedBlockingQueue within visitedLocations are consumed
+     */
     private void consumeVisitedLocationQueue(BlockingQueue<VisitedLocation> visitedLocationQueue) {
         for (int futureNumber = 0; futureNumber < USER_CONSUMER_COUNT; futureNumber++) {
             executorServiceTourGuide.submit(() -> {
@@ -161,9 +197,9 @@ public class TourGuideServiceImpl implements TourGuideService {
                     while (!visitedLocationQueue.isEmpty()) {
                         VisitedLocation visitedLocation = visitedLocationQueue.take();
 
-                            User user = getUserFromId(visitedLocation.userId);
-                            addUserNewVisitedLocation(user,visitedLocation);
-                            rewardsService.calculateRewards(user);
+                        User user = userService.getUserById(visitedLocation.userId);
+                        user.addToVisitedLocations(visitedLocation);
+                        rewardsService.calculateRewards(user);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -172,94 +208,5 @@ public class TourGuideServiceImpl implements TourGuideService {
         }
     }
 
-    @Override
-    public List<VisitedLocation> trackAllUserLocation(List<User> allUsers) throws Exception {
-        BlockingQueue<User> userQueue = new LinkedBlockingQueue<>();
-        int userCount = InternalTestHelper.getInternalUserNumber();
-        publishUser(allUsers, userQueue);
-        CountDownLatch userLatch = new CountDownLatch(userCount);
-        List<VisitedLocation> allVisitedLocations = calculateUserLocationFromUserQueue(userLatch, userQueue);
-        userLatch.await();
-        return allVisitedLocations;
-    }
-
-    private void publishUser(List<User> allUsers, BlockingQueue<User> userQueue) {
-        allUsers
-                .forEach(user -> {
-                    try {
-                        userQueue.put(user);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                });
-    }
-
-    private List<VisitedLocation> calculateUserLocationFromUserQueue(CountDownLatch userLatch, BlockingQueue<User> userQueue) {
-        List<VisitedLocation> allVisitedLocations = new ArrayList<>();
-        for (int futureNumber = 0; futureNumber < USER_CONSUMER_COUNT; futureNumber++) {
-            executorServiceTourGuide.submit(() -> {
-                try {
-                    while (userLatch.getCount() != 0) {
-                        User user = userQueue.take();
-                        try {
-                            VisitedLocation visitedLocation = trackUserLocation(user);
-                            allVisitedLocations.add(visitedLocation);}
-                        finally {
-                            userLatch.countDown();
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-        }
-        return allVisitedLocations;
-    }
-
-    private void addShutDownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(tracker::stopTracking));
-    }
-
-    /**********************************************************************************
-     *
-     * Methods Below: For Internal Testing
-     *
-     **********************************************************************************/
-    private static final String tripPricerApiKey = "test-server-api-key";
-
-    // Database connection will be used for external users, but for testing purposes internal users are provided and stored in memory
-    private void initializeInternalUsers() {
-        IntStream.range(0, InternalTestHelper.getInternalUserNumber()).forEach(i -> {
-            String userName = "internalUser" + i;
-            String phone = "000";
-            String email = userName + "@tourGuide.com";
-            User user = new User(UUID.randomUUID(), userName, phone, email);
-            generateUserLocationHistory(user);
-
-            userRepository.addUser(user);
-        });
-        logger.debug("Created " + InternalTestHelper.getInternalUserNumber() + " internal test users.");
-    }
-
-    private void generateUserLocationHistory(User user) {
-        IntStream.range(0, 3).forEach(i -> addUserNewVisitedLocation(user, new VisitedLocation(user.getUserId(), new Location(generateRandomLatitude(), generateRandomLongitude()), getRandomTime())));
-    }
-
-    private double generateRandomLongitude() {
-        double leftLimit = -180;
-        double rightLimit = 180;
-        return leftLimit + new Random().nextDouble() * (rightLimit - leftLimit);
-    }
-
-    private double generateRandomLatitude() {
-        double leftLimit = -85.05112878;
-        double rightLimit = 85.05112878;
-        return leftLimit + new Random().nextDouble() * (rightLimit - leftLimit);
-    }
-
-    private Date getRandomTime() {
-        LocalDateTime localDateTime = LocalDateTime.now().minusDays(new Random().nextInt(30));
-        return Date.from(localDateTime.toInstant(ZoneOffset.UTC));
-    }
 
 }
