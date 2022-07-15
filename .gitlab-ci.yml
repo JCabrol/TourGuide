@@ -1,8 +1,7 @@
 build-job:
   stage: build
   script:
-   - gradle compileJava,processResources,classes,bootJar,assemble
-
+   - ./gradlew --build-cache assemble
 
 test-job1:
   stage: test
