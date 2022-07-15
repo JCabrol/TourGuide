@@ -1,11 +1,4 @@
-
-stages:
-  - build
-  - test
-
-build_job:
-  stage: build
-  image: gradle:4.8.1-jdk8
+image: gradle:4.8.1-jdk8
 
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
@@ -24,4 +17,5 @@ build:
     paths:
       - build
       - .gradle
+
 
