@@ -5,8 +5,8 @@ stages:
 
 build:
   stage: build
-  script: make build
+  script: gradle build
 
 test:
   stage: test
-  script: make test
+  script: gradle test
