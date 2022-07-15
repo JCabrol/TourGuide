@@ -1,4 +1,4 @@
-package tourGuide.model;
+package tourGuide.model.DTO;
 
 import gpsUtil.location.Attraction;
 import gpsUtil.location.VisitedLocation;
@@ -9,10 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UserReward {
+public class RewardElements {
 
-	public final VisitedLocation visitedLocation;
-	public final Attraction attraction;
-	private int rewardPoints;
-
+    private VisitedLocation visitedLocation;
+    private Attraction attraction;
 }

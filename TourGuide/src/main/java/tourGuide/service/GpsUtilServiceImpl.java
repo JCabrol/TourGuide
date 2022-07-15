@@ -15,10 +15,6 @@ public class GpsUtilServiceImpl implements GpsUtilService {
 @Autowired
     private GpsUtilRepository gpsUtilRepository;
 
-//    public GpsUtilServiceImpl(){
-//        gpsUtilRepository = new GpsUtilRepository();
-//    }
-
     @Override
     public VisitedLocation getUserLocation(UUID userId) {
         return gpsUtilRepository.getUserLocation(userId);

@@ -11,7 +11,7 @@ import tourGuide.service.RewardsService;
 import tourGuide.service.TourGuideService;
 
 @Slf4j
-@Profile("!unitTest")
+@Profile({"!unitTest"})
 @Component
 public class TourGuideInitialisation implements ApplicationRunner {
 

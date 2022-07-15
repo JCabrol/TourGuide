@@ -5,9 +5,10 @@ import gpsUtil.location.Location;
 import gpsUtil.location.VisitedLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tourGuide.model.RewardElements;
+import tourGuide.model.DTO.RewardElements;
 import tourGuide.model.User;
 import tourGuide.model.UserReward;
+import tourGuide.recursiveTask.CalculatingRewardsTask;
 import tourGuide.repository.RewardCentralRepository;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 
+
 @Service
 public class RewardsServiceImpl implements RewardsService {
 
@@ -25,19 +27,22 @@ public class RewardsServiceImpl implements RewardsService {
     private final int defaultProximityBuffer = 200;
     private int proximityBuffer = defaultProximityBuffer;
 
-
-@Autowired
-    private GpsUtilService gpsUtilService;
-
-@Autowired
-    private RewardCentralRepository rewardCentralRepository;
-
     private List<Attraction> attractionList;
 
     private final ExecutorService executorServiceRewards = Executors.newCachedThreadPool();
     private final ForkJoinPool forkJoinPool = new ForkJoinPool(20);
 
-@Override
+    @Autowired
+    private GpsUtilService gpsUtilService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private RewardCentralRepository rewardCentralRepository;
+
+
+    @Override
     public void initializeRewardsService() {
         this.attractionList = gpsUtilService.getAttractions();
     }
@@ -59,30 +64,35 @@ public class RewardsServiceImpl implements RewardsService {
     }
 
     @Override
+    public int getProximityBuffer() {
+        return this.proximityBuffer;
+    }
+
+    @Override
     public void setDefaultProximityBuffer() {
         proximityBuffer = defaultProximityBuffer;
     }
 
     @Override
     public void calculateRewards(User user) {
-        List<RewardElements> rewardElementsList = forkJoinPool.invoke(new CalculatingRewardsTask(user, attractionList,this));
+        List<RewardElements> rewardElementsList = forkJoinPool.invoke(new CalculatingRewardsTask(user, attractionList, this));
         if (rewardElementsList.size() != 0) {
             executorServiceRewards.submit(() -> {
                 for (RewardElements rewardElements : rewardElementsList) {
-                    user.addUserReward(new UserReward(rewardElements.getVisitedLocation(), rewardElements.getAttraction(), getRewardPoints(rewardElements.getAttraction(), user)));
+                    userService.addUserRewards(user,new UserReward(rewardElements.getVisitedLocation(), rewardElements.getAttraction(), getRewardPoints(rewardElements.getAttraction(), user)));
                 }
             });
         }
     }
 
     @Override
-    public List<Attraction> searchFiveClosestAttractionsMap(VisitedLocation visitedLocation) {
+    public List<Attraction> searchFiveClosestAttractions(VisitedLocation visitedLocation) {
         List<Attraction> nearbyAttractions = new ArrayList<>();
-        List<Attraction> attractionList = gpsUtilService.getAttractions();
+        if(attractionList.size()!=0){
         attractionList.stream().parallel()
                 .sorted(Comparator.comparingDouble(attraction -> getDistance(new Location(attraction.longitude, attraction.latitude), visitedLocation.location)))
                 .limit(5)
-                .forEach(nearbyAttractions::add);
+                .forEach(nearbyAttractions::add);}
         return nearbyAttractions;
     }
 

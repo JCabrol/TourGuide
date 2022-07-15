@@ -19,7 +19,7 @@
 //import org.springframework.test.annotation.DirtiesContext;
 //import org.springframework.test.context.junit4.SpringRunner;
 //import tourGuide.helper.InternalTestHelper;
-//import tourGuide.model.UserCloseAttractionsInfo;
+//import tourGuide.model.DTO.UserCloseAttractionsInfo;
 //import tourGuide.repository.GpsUtilRepository;
 //import tourGuide.repository.RewardCentralRepository;
 //import tourGuide.repository.UserRepository;

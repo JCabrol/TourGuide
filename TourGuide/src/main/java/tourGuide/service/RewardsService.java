@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 import tourGuide.model.User;
 
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
 
 @Service
 public interface RewardsService {
@@ -22,15 +20,13 @@ public interface RewardsService {
 
     void setProximityBuffer(int proximityBuffer);
 
-    void setDefaultProximityBuffer();
+    int getProximityBuffer();
 
-//    int getAttractionRewardPoints(UUID attractionId, UUID userId);
+    void setDefaultProximityBuffer();
 
     void calculateRewards(User user);
 
-    List<Attraction> searchFiveClosestAttractionsMap(VisitedLocation visitedLocation);
-
-//    void addUserNewRewards(User user, VisitedLocation lastLocation, Attraction attraction);
+    List<Attraction> searchFiveClosestAttractions(VisitedLocation visitedLocation);
 
     boolean isNotInRewardsList(String attractionName, User user);
 

@@ -3,20 +3,22 @@ package tourGuide.service;
 import gpsUtil.location.Attraction;
 import gpsUtil.location.Location;
 import gpsUtil.location.VisitedLocation;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tourGuide.exception.ObjectNotFoundException;
-import tourGuide.model.CloseAttraction;
+import tourGuide.model.DTO.CloseAttraction;
+import tourGuide.model.DTO.UserCloseAttractionsInfo;
 import tourGuide.model.User;
-import tourGuide.model.UserCloseAttractionsInfo;
+import tourGuide.recursiveTask.CalculateLocationTask;
 import tourGuide.tracker.Tracker;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.*;
 
 
-@Slf4j
 @Service
 public class TourGuideServiceImpl implements TourGuideService {
 
@@ -41,7 +43,7 @@ public class TourGuideServiceImpl implements TourGuideService {
      */
     @Override
     public void initializeTourGuideService() {
-        tracker = new Tracker(this);
+        tracker = new Tracker(this, this.userService);
         addShutDownHook();
     }
 
@@ -89,7 +91,11 @@ public class TourGuideServiceImpl implements TourGuideService {
         UUID userId = user.getUserId();
         VisitedLocation visitedLocation = gpsUtilService.getUserLocation(userId);
         rewardsService.calculateRewards(user);
-        user.addToVisitedLocations(visitedLocation);
+        try {
+            userService.addUserNewVisitedLocation(user, visitedLocation);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return visitedLocation;
     }
 
@@ -100,12 +106,12 @@ public class TourGuideServiceImpl implements TourGuideService {
      * and the reward points awarded for this attraction
      *
      * @param visitedLocation a VisitedLocation object
-     * @throws ObjectNotFoundException when the user is not found by its id
      * @return a UserCloseAttractionsInfo object containing all information about the five closest locations
+     * @throws ObjectNotFoundException when the user is not found by its id
      */
     @Override
     public UserCloseAttractionsInfo searchFiveClosestAttractions(VisitedLocation visitedLocation) throws ObjectNotFoundException {
-        List<Attraction> attractionsAndDistancesFromFiveClosestLocation = rewardsService.searchFiveClosestAttractionsMap(visitedLocation);
+        List<Attraction> attractionsAndDistancesFromFiveClosestLocation = rewardsService.searchFiveClosestAttractions(visitedLocation);
         UserCloseAttractionsInfo userCloseAttractionsInfo = new UserCloseAttractionsInfo(visitedLocation.location.latitude, visitedLocation.location.longitude);
         List<CloseAttraction> fiveClosestAttractions = new ArrayList<>();
         User user = userService.getUserById(visitedLocation.userId);
@@ -116,15 +122,6 @@ public class TourGuideServiceImpl implements TourGuideService {
         return userCloseAttractionsInfo;
     }
 
-    /**
-     * Get all the user registered
-     *
-     * @return a list of user containing all users registered
-     */
-    @Override
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
-    }
 
     /**
      * Get the current location for each user and returns the result in a hashmap.
@@ -135,8 +132,8 @@ public class TourGuideServiceImpl implements TourGuideService {
      * @return a HashMap containing all the users' id as key and all their location as value
      */
     @Override
-    public Map<String, Location> getAllCurrentLocations() {
-        Map<String, Location> result = new HashMap<>();
+    public HashMap<String, Location> getAllCurrentLocations() {
+        HashMap<String, Location> result = new HashMap<>();
 
         userService.getAllUsers()
                 .stream()
@@ -156,11 +153,15 @@ public class TourGuideServiceImpl implements TourGuideService {
      */
     @Override
     public List<VisitedLocation> trackAllUsers(List<User> allUsers) {
-        BlockingQueue<VisitedLocation> visitedLocationQueue = new LinkedBlockingQueue<>();
-        List<VisitedLocation> visitedLocations = forkJoinPool.invoke(new CalculateLocationTask(allUsers, this.gpsUtilService));
-        executorServiceTourGuide.submit(() -> publishVisitedLocationQueue(visitedLocations, visitedLocationQueue));
-        consumeVisitedLocationQueue(visitedLocationQueue);
-        return visitedLocations;
+        if (allUsers.size() != 0) {
+            BlockingQueue<VisitedLocation> visitedLocationQueue = new LinkedBlockingQueue<>();
+            List<VisitedLocation> visitedLocations = forkJoinPool.invoke(new CalculateLocationTask(allUsers, this.gpsUtilService));
+            executorServiceTourGuide.submit(() -> publishVisitedLocationQueue(visitedLocations, visitedLocationQueue));
+            consumeVisitedLocationQueue(visitedLocationQueue);
+            return visitedLocations;
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -196,9 +197,8 @@ public class TourGuideServiceImpl implements TourGuideService {
                 try {
                     while (!visitedLocationQueue.isEmpty()) {
                         VisitedLocation visitedLocation = visitedLocationQueue.take();
-
                         User user = userService.getUserById(visitedLocation.userId);
-                        user.addToVisitedLocations(visitedLocation);
+                        userService.addUserNewVisitedLocation(user, visitedLocation);
                         rewardsService.calculateRewards(user);
                     }
                 } catch (Exception e) {

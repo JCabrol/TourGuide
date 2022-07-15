@@ -5,9 +5,9 @@ import org.springframework.stereotype.Repository;
 import tourGuide.dataSource.InternalUserMap;
 import tourGuide.exception.ObjectAlreadyExistingException;
 import tourGuide.exception.ObjectNotFoundException;
+import tourGuide.helper.InternalTestHelper;
 import tourGuide.model.User;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -17,12 +17,12 @@ import java.util.stream.Stream;
 @Repository
 public class UserRepository {
 
-
     @Autowired
     private InternalUserMap internalUserMap;
 
-    public HashMap<String,User> getUserMap()  {
-        return internalUserMap.getInternalUserMap();
+
+    public List<User> getUserList() {
+        return internalUserMap.getInternalUserMap().values().parallelStream().collect(Collectors.toList());
     }
 
     public User getUserByName(String username) throws ObjectNotFoundException {
@@ -48,6 +48,7 @@ public class UserRepository {
 
         if (!internalUserMap.getInternalUserMap().containsKey(user.getUserName())) {
             internalUserMap.getInternalUserMap().put(user.getUserName(), user);
+            InternalTestHelper.setInternalUserNumber(InternalTestHelper.getInternalUserNumber()+1);
         } else {
             throw new ObjectAlreadyExistingException("The user whose name is " + user.getUserName() + " was already existing, so it couldn't have been added.");
         }
@@ -64,13 +65,9 @@ public class UserRepository {
     public void deleteUser(User user) throws ObjectNotFoundException {
         if (internalUserMap.getInternalUserMap().containsKey(user.getUserName())) {
             internalUserMap.getInternalUserMap().remove(user.getUserName());
+            InternalTestHelper.setInternalUserNumber(InternalTestHelper.getInternalUserNumber()-1);
         } else {
             throw new ObjectNotFoundException("The user whose name is " + user.getUserName() + " was not found, so it couldn't have been deleted.");
         }
     }
-
-    public List<User> getUserList() {
-        return internalUserMap.getInternalUserMap().values().parallelStream().collect(Collectors.toList());
-    }
-
 }

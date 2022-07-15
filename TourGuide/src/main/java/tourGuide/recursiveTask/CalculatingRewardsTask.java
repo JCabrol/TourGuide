@@ -1,9 +1,10 @@
-package tourGuide.service;
+package tourGuide.recursiveTask;
 
 import gpsUtil.location.Attraction;
 import gpsUtil.location.VisitedLocation;
-import tourGuide.model.RewardElements;
+import tourGuide.model.DTO.RewardElements;
 import tourGuide.model.User;
+import tourGuide.service.RewardsService;
 
 import java.util.ArrayList;
 import java.util.List;

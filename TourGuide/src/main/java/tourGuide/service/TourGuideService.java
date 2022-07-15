@@ -2,14 +2,15 @@ package tourGuide.service;
 
 import gpsUtil.location.Location;
 import gpsUtil.location.VisitedLocation;
+import lombok.Getter;
 import org.springframework.stereotype.Service;
 import tourGuide.exception.ObjectNotFoundException;
 import tourGuide.model.User;
-import tourGuide.model.UserCloseAttractionsInfo;
+import tourGuide.model.DTO.UserCloseAttractionsInfo;
 import tourGuide.tracker.Tracker;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public interface TourGuideService {
@@ -45,7 +46,7 @@ public interface TourGuideService {
      * @param user the user whose location is tracked
      * @return the actual user VisitedLocation
      */
-    VisitedLocation trackUserLocation(User user);
+    VisitedLocation trackUserLocation(User user) throws Exception;
 
     /**
      * Get the five closest attractions from a visitedLocation, whatever the distance,
@@ -54,17 +55,10 @@ public interface TourGuideService {
      * and the reward points awarded for this attraction
      *
      * @param visitedLocation a VisitedLocation object
-     * @throws ObjectNotFoundException when the user is not found by its id
      * @return a UserCloseAttractionsInfo object containing all information about the five closest locations
+     * @throws ObjectNotFoundException when the user is not found by its id
      */
     UserCloseAttractionsInfo searchFiveClosestAttractions(VisitedLocation visitedLocation) throws ObjectNotFoundException;
-
-    /**
-     * Get all the user registered
-     *
-     * @return a list of user containing all users registered
-     */
-    List<User> getAllUsers();
 
     /**
      * Get the current location for each user and returns the result in a hashmap.
@@ -74,7 +68,7 @@ public interface TourGuideService {
      *
      * @return a HashMap containing all the users' id as key and all their location as value
      */
-    Map<String, Location> getAllCurrentLocations();
+    HashMap<String, Location> getAllCurrentLocations();
 
     /**
      * Track the location of all the users in the given list,

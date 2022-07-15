@@ -2,38 +2,24 @@ package tourGuide.dataSource;
 
 import gpsUtil.location.Location;
 import gpsUtil.location.VisitedLocation;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 import tourGuide.helper.InternalTestHelper;
 import tourGuide.model.User;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.IntStream;
 
+@Setter
+@Getter
 @Service
 public class InternalUserMap {
 
     private boolean testMode = true;
     private HashMap<String, User> internalUserMap = new HashMap<>();
-
-    public boolean isTestMode() {
-        return testMode;
-    }
-
-    public void setTestMode(boolean testMode) {
-        this.testMode = testMode;
-    }
-
-    public HashMap<String, User> getInternalUserMap() {
-        return internalUserMap;
-    }
-
-    public void setInternalUserMap(HashMap<String, User> internalUserMap) {
-        this.internalUserMap = internalUserMap;}
 
     /**********************************************************************************
      *
@@ -50,12 +36,14 @@ public class InternalUserMap {
             String email = userName + "@tourGuide.com";
             User user = new User(UUID.randomUUID(), userName, phone, email);
             generateUserLocationHistory(user);
-            internalUserMap.put(userName,user);
+            internalUserMap.put(userName, user);
         });
     }
 
     private void generateUserLocationHistory(User user) {
-        IntStream.range(0, 3).forEach(i -> user.addToVisitedLocations(new VisitedLocation(user.getUserId(), new Location(generateRandomLatitude(), generateRandomLongitude()), getRandomTime())));
+        List<VisitedLocation> visitedLocationList = new ArrayList<>();
+        IntStream.range(0, 3).forEach(i -> visitedLocationList.add(new VisitedLocation(user.getUserId(), new Location(generateRandomLatitude(), generateRandomLongitude()), getRandomTime())));
+        user.setVisitedLocations(visitedLocationList);
     }
 
     private double generateRandomLongitude() {

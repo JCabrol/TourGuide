@@ -1,7 +1,8 @@
-package tourGuide.service;
+package tourGuide.recursiveTask;
 
 import gpsUtil.location.VisitedLocation;
 import tourGuide.model.User;
+import tourGuide.service.GpsUtilService;
 
 import java.util.ArrayList;
 import java.util.List;
