@@ -57,6 +57,6 @@ public class UserController {
                                         @RequestParam(required = false) Integer numberOfChildren) {
         UserPreferencesDTO userPreferencesDTO = new UserPreferencesDTO(attractionProximity, currency, lowerPricePoint, highPricePoint, tripDuration, ticketQuantity, numberOfAdults, numberOfChildren);
         userService.updateUserPreferences(userName, userPreferencesDTO);
-        return "The preferences for user " + userName + " has been updated.";
+        return "The preferences for user " + userName + " have been updated.";
     }
 }
