@@ -15,25 +15,10 @@ build:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
     paths:
-      - build
-      - .gradle
+      - $CI_PROJECT_DIR/build
+      - $CI_PROJECT_DIR/.gradle
 
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/generatedFiles/tourGuide.jar
-
-test:
-  stage: test
-  script: gradle test
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: push
-    paths:
-      - test
-      - .gradle
-  artifacts:
-    paths:
-      - $CI_PROJECT_DIR/generatedFiles/index.html
-
-
+      - $CI_PROJECT_DIR/generatedFiles
 
