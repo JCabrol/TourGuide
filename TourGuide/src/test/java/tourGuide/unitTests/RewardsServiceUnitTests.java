@@ -15,7 +15,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import tourGuide.model.User;
 import tourGuide.model.UserReward;
 import tourGuide.repository.RewardCentralRepository;
-import tourGuide.service.GpsUtilService;
 import tourGuide.service.RewardsService;
 import tourGuide.service.UserService;
 
@@ -38,9 +37,6 @@ public class RewardsServiceUnitTests {
 
     @Autowired
     private RewardsService rewardsService;
-
-    @Autowired
-    private GpsUtilService gpsUtilService;
 
     @MockBean
     private RewardCentralRepository rewardCentralRepository;
@@ -152,7 +148,7 @@ public class RewardsServiceUnitTests {
 
     @Test
     @Tag("searchFiveClosestAttractionTest")
-    public void searchFiveClosestAttractionTest() {
+    public void searchFiveClosestAttractionTest() throws InterruptedException {
 
         //GIVEN
         // a full list of attraction
@@ -167,7 +163,7 @@ public class RewardsServiceUnitTests {
         //WHEN
         // searchFiveClosestAttraction is called
         List<Attraction> result = rewardsService.searchFiveClosestAttractions(visitedLocation);
-
+        TimeUnit.MILLISECONDS.sleep(500);
         //THEN
         // it returns a list containing the five closest attractions
         assertEquals(5, result.size());
@@ -228,11 +224,28 @@ public class RewardsServiceUnitTests {
         UUID id = UUID.randomUUID();
         User user = new User(id, "name1", "phoneNumber1", "mail1");
         List<VisitedLocation> visitedLocationList = new ArrayList<>();
+        double latitude = 0;
+        double longitude = 0;
+        double farLatitude = 0;
+        double farLongitude = 0;
+        while (rewardsService.getDistance(new Location(latitude, longitude), new Location(farLatitude, farLongitude)) <= rewardsService.getProximityBuffer()) {
+            latitude++;
+            longitude++;
+            farLatitude--;
+            farLongitude--;
+        }
         for (int i = 0; i < 10; i++) {
-            VisitedLocation visitedLocation = new VisitedLocation(id, new Location(10 * i, -30 * i), new Date());
+            VisitedLocation visitedLocation = new VisitedLocation(id, new Location(latitude + i, longitude + i), new Date());
             visitedLocationList.add(visitedLocation);
         }
-        rewardsService.setAttractionList(gpsUtilService.getAttractions());
+        List<Attraction> attractionList = new ArrayList<>();
+        Attraction closeAttraction = new Attraction("name", "city", "state", farLatitude+2, farLongitude+2);
+        attractionList.add(closeAttraction);
+        for (int i = 0; i < 10; i++) {
+            Attraction attraction = new Attraction("name" + i, "city" + i, "state" + i, farLatitude - i, farLongitude - i);
+            attractionList.add(attraction);
+        }
+        rewardsService.setAttractionList(attractionList);
         user.setVisitedLocations(visitedLocationList);
         when(rewardCentralRepository.getAttractionRewardPoints(any(UUID.class), any(UUID.class))).thenReturn(5);
         doNothing().when(userService).addUserRewards(any(User.class), any(UserReward.class));
@@ -241,15 +254,124 @@ public class RewardsServiceUnitTests {
         // calculateRewards is called
         rewardsService.calculateRewards(user);
         int numberOfThread = Thread.currentThread().getThreadGroup().activeCount();
-        TimeUnit.MILLISECONDS.sleep(200);
+        TimeUnit.MILLISECONDS.sleep(500);
 
         //THEN
         // The method is running on several threads
-        assertTrue(numberOfThread>15);
+        assertTrue(numberOfThread > 15);
         // and the expected methods have been called with expected arguments
         verify(rewardCentralRepository, Mockito.times(1)).getAttractionRewardPoints(any(UUID.class), any(UUID.class));
         verify(userService, Mockito.times(1)).addUserRewards(any(User.class), any(UserReward.class));
     }
 
+    @Test
+    @Tag("calculateRewardsTest")
+    public void calculateRewardsWithoutVisitedLocationTest() throws InterruptedException {
 
+        //GIVEN
+        // a user without any visitedLocation
+        UUID id = UUID.randomUUID();
+        User user = new User(id, "name1", "phoneNumber1", "mail1");
+        List<Attraction> attractionList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Attraction attraction = new Attraction("name" + i, "city" + i, "state" + i, 100 * i, -100 * i);
+            attractionList.add(attraction);
+        }
+        rewardsService.setAttractionList(attractionList);
+        doNothing().when(userService).addUserRewards(any(User.class), any(UserReward.class));
+
+        //WHEN
+        // calculateRewards is called
+        rewardsService.calculateRewards(user);
+        TimeUnit.MILLISECONDS.sleep(500);
+
+        //THEN
+        // and the expected methods have been called with expected arguments
+        verify(rewardCentralRepository, Mockito.times(0)).getAttractionRewardPoints(any(UUID.class), any(UUID.class));
+        verify(userService, Mockito.times(0)).addUserRewards(any(User.class), any(UserReward.class));
+    }
+
+    @Test
+    @Tag("calculateRewardsTest")
+    public void calculateRewardsNotEnoughCLoseAttractionToAddRewardsTest() throws InterruptedException {
+
+        //GIVEN
+        // a user with several visitedLocations
+        UUID id = UUID.randomUUID();
+        User user = new User(id, "name1", "phoneNumber1", "mail1");
+        List<VisitedLocation> visitedLocationList = new ArrayList<>();
+        double latitude = 0;
+        double longitude = 0;
+        double farLatitude = 0;
+        double farLongitude = 0;
+        while (rewardsService.getDistance(new Location(latitude, longitude), new Location(farLatitude, farLongitude)) <= rewardsService.getProximityBuffer()) {
+            latitude++;
+            longitude++;
+            farLatitude--;
+            farLongitude--;
+        }
+        for (int i = 0; i < 10; i++) {
+            VisitedLocation visitedLocation = new VisitedLocation(id, new Location(latitude + i, longitude + i), new Date());
+            visitedLocationList.add(visitedLocation);
+        }
+        List<Attraction> attractionList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Attraction attraction = new Attraction("name" + i, "city" + i, "state" + i, farLatitude - i, farLongitude - i);
+            attractionList.add(attraction);
+        }
+        rewardsService.setAttractionList(attractionList);
+        user.setVisitedLocations(visitedLocationList);
+
+        //WHEN
+        // calculateRewards is called
+        rewardsService.calculateRewards(user);
+        TimeUnit.MILLISECONDS.sleep(500);
+
+        //THEN
+        // the expected methods have been called with expected arguments
+        verify(rewardCentralRepository, Mockito.times(0)).getAttractionRewardPoints(any(UUID.class), any(UUID.class));
+        verify(userService, Mockito.times(0)).addUserRewards(any(User.class), any(UserReward.class));
+    }
+
+    @Test
+    @Tag("calculateRewardsTest")
+    public void calculateRewardsCloseAttractionsAlreadyInUserRewardListTest() throws InterruptedException {
+
+        //GIVEN
+        // a user with several visitedLocations
+        UUID id = UUID.randomUUID();
+        User user = new User(id, "name1", "phoneNumber1", "mail1");
+        List<VisitedLocation> visitedLocationList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            VisitedLocation visitedLocation = new VisitedLocation(id, new Location( i,  i), new Date());
+            visitedLocationList.add(visitedLocation);
+        }
+        user.setVisitedLocations(visitedLocationList);
+
+        List<Attraction> attractionList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Attraction attraction = new Attraction("name" + i, "city" + i, "state" + i, i, i);
+            attractionList.add(attraction);
+        }
+        rewardsService.setAttractionList(attractionList);
+
+        List<UserReward> userRewardList = new ArrayList<>();
+        for (int i = 0; i < 10; i++)
+        {
+           UserReward userReward = new UserReward(visitedLocationList.get(i),attractionList.get(i),i);
+           userRewardList.add(userReward);
+        }
+        user.setUserRewards(userRewardList);
+
+
+        //WHEN
+        // calculateRewards is called
+        rewardsService.calculateRewards(user);
+        TimeUnit.MILLISECONDS.sleep(500);
+
+        //THEN
+        // the expected methods have been called with expected arguments
+        verify(rewardCentralRepository, Mockito.times(0)).getAttractionRewardPoints(any(UUID.class), any(UUID.class));
+        verify(userService, Mockito.times(0)).addUserRewards(any(User.class), any(UserReward.class));
+    }
 }
