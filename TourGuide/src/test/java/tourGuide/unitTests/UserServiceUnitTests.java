@@ -1,5 +1,8 @@
 package tourGuide.unitTests;
 
+import gpsUtil.location.Attraction;
+import gpsUtil.location.Location;
+import gpsUtil.location.VisitedLocation;
 import org.junit.Test;
 import org.junit.jupiter.api.Tag;
 import org.junit.runner.RunWith;
@@ -15,15 +18,16 @@ import tourGuide.exception.ObjectNotFoundException;
 import tourGuide.model.DTO.UserDTO;
 import tourGuide.model.DTO.UserPreferencesDTO;
 import tourGuide.model.User;
+import tourGuide.model.UserReward;
 import tourGuide.repository.UserRepository;
 import tourGuide.service.UserService;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -525,7 +529,7 @@ public class UserServiceUnitTests {
 
         //WHEN
         // updateUserPreferences is called
-        userService.updateUserPreferences(userName,userPreferencesDTO);
+        userService.updateUserPreferences(userName, userPreferencesDTO);
 
         //THEN
         // the user's preferences have been updated
@@ -556,7 +560,7 @@ public class UserServiceUnitTests {
 
         //WHEN
         // updateUserPreferences is called
-        userService.updateUserPreferences(userName,userPreferencesDTO);
+        userService.updateUserPreferences(userName, userPreferencesDTO);
 
         //THEN
         // the user's preferences are unchanged
@@ -589,10 +593,107 @@ public class UserServiceUnitTests {
 
         //THEN
         // an ObjectNotFoundException is thrown with the expected error message
-        Exception exception = assertThrows(ObjectNotFoundException.class, () -> userService.updateUserPreferences(userName,userPreferencesDTO));
+        Exception exception = assertThrows(ObjectNotFoundException.class, () -> userService.updateUserPreferences(userName, userPreferencesDTO));
         assertEquals("error message", exception.getMessage());
         // the expected methods have been called with expected arguments
         verify(userRepository, Mockito.times(1)).getUserByName(userName);
         verify(userRepository, Mockito.times(0)).updateUser(any(User.class));
+    }
+
+    @Tag("addUserRewardsTest")
+    @Test
+    public void addUserRewardsTest() {
+
+        //GIVEN
+        // an existing user and rewards to add
+        UUID userId = UUID.randomUUID();
+        User user = new User(userId, "name", "phoneNumber", "mail");
+        VisitedLocation visitedLocation = new VisitedLocation(userId, new Location(2D, 2D), new Date());
+        Attraction attraction = new Attraction("attractionName", "city", "state", 3D, 3D);
+        UserReward userReward = new UserReward(visitedLocation, attraction, 5);
+        doNothing().when(userRepository).updateUser(user);
+
+        //WHEN
+        // addUserRewards is called
+        userService.addUserRewards(user, userReward);
+
+        //THEN
+        // new reward has been added to the user's list, with expected information
+        assertEquals(1, user.getUserRewards().size());
+        assertEquals(visitedLocation, user.getUserRewards().get(0).visitedLocation);
+        assertEquals(attraction, user.getUserRewards().get(0).attraction);
+        assertEquals(5, user.getUserRewards().get(0).getRewardPoints());
+        // the expected methods have been called with expected arguments
+        verify(userRepository, Mockito.times(1)).updateUser(user);
+    }
+
+    @Tag("getUserLastVisitedLocationTest")
+    @Test
+    public void getUserLastVisitedLocationTest() {
+
+        //GIVEN
+        // an existing user with a list of visitedLocations
+        UUID userId = UUID.randomUUID();
+        Date date = new Date();
+        User user = new User(userId, "name", "phoneNumber", "mail");
+        List<VisitedLocation> visitedLocationList = new ArrayList<>();
+        VisitedLocation lastVisitedLocation = new VisitedLocation(userId, new Location(2D, 2D), date);
+        visitedLocationList.add(lastVisitedLocation);
+        for (int i = 0; i < 5; i++) {
+            VisitedLocation visitedLocation = new VisitedLocation(userId, new Location(i, i), new Date());
+            visitedLocationList.add(visitedLocation);
+        }
+        user.setVisitedLocations(visitedLocationList);
+        user.setLatestLocationTimestamp(date);
+
+        //WHEN
+        // getUserLastVisitedLocation is called
+        VisitedLocation result = userService.getUserLastVisitedLocation(user);
+
+        //THEN
+        // the visitedLocation whose date is corresponding to latestLocationTimestamp is returned
+        assertEquals(lastVisitedLocation, result);
+    }
+
+    @Tag("getUserLastVisitedLocationTest")
+    @Test
+    public void getUserLastVisitedLocationWithoutVisitedLocationTest() {
+
+        //GIVEN
+        // an existing user without any visitedLocation
+        User user = new User(UUID.randomUUID(), "name", "phoneNumber", "mail");
+
+        //WHEN
+        // getUserLastVisitedLocation is called
+        VisitedLocation result = userService.getUserLastVisitedLocation(user);
+
+        //THEN
+        // null is returned
+        assertNull(result);
+    }
+
+    @Tag("addUserNewVisitedLocationTest")
+    @Test
+    public void addUserNewVisitedLocationTest() {
+
+        //GIVEN
+        // an existing user and a visitedLocation to add
+        UUID userId = UUID.randomUUID();
+        Date date = new Date();
+        User user = new User(userId, "name", "phoneNumber", "mail");
+        VisitedLocation visitedLocation = new VisitedLocation(userId, new Location(2D, 2D), date);
+        doNothing().when(userRepository).updateUser(user);
+
+        //WHEN
+        // addUserVisitedVisitedLocation is called
+        userService.addUserNewVisitedLocation(user, visitedLocation);
+
+        //THEN
+        // the visitedLocation have been added to the user's list and the latestLocationTimestamp have been updated
+        assertEquals(1, user.getVisitedLocations().size());
+        assertTrue(user.getVisitedLocations().contains(visitedLocation));
+        assertEquals(date, user.getLatestLocationTimestamp());
+        // the expected methods have been called with expected arguments
+        verify(userRepository, Mockito.times(1)).updateUser(user);
     }
 }

@@ -388,7 +388,7 @@ public class TourGuideServiceUnitTests {
         // trackAllUsers is called
         List<VisitedLocation> result = tourGuideService.trackAllUsers(userList);
         int numberOfThread = Thread.currentThread().getThreadGroup().activeCount();
-        TimeUnit.MILLISECONDS.sleep(100);
+        TimeUnit.MILLISECONDS.sleep(1000);
 
         //THEN
         // the expected list of visitedLocations is returned and the method is running with several threads
@@ -404,7 +404,7 @@ public class TourGuideServiceUnitTests {
 
     @Test
     @Tag("TrackAllUsersTest")
-    public void trackAllUsersEmptyUsersTest() throws Exception {
+    public void trackAllUsersEmptyUsersTest() {
 
         //GIVEN
         // a list of users
