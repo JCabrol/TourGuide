@@ -20,7 +20,7 @@ build:
 
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/generatedFiles/
+      - $CI_PROJECT_DIR/generatedFiles/tourGuide.jar
 
 test:
   stage: test
@@ -33,7 +33,7 @@ test:
       - .gradle
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/generatedFiles/
+      - $CI_PROJECT_DIR/generatedFiles/index.html
 
 
 
