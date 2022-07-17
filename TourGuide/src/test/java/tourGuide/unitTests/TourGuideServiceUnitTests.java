@@ -4,7 +4,6 @@ import gpsUtil.location.Attraction;
 import gpsUtil.location.Location;
 import gpsUtil.location.VisitedLocation;
 import org.junit.Test;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -52,7 +51,7 @@ public class TourGuideServiceUnitTests {
 
     @Test
     @Tag("getUserLocationTest")
-    public void getUserLocationExistingLocationTest()  {
+    public void getUserLocationExistingLocationTest() {
 
         //GIVEN
         // a user with a last VisitedLocation existing

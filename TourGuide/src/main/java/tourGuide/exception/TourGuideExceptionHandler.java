@@ -31,7 +31,8 @@ public class TourGuideExceptionHandler extends ResponseEntityExceptionHandler {
     @NonNull
     protected ResponseEntity<Object> handleNoHandlerFoundException(
             @NonNull NoHandlerFoundException ex, @NonNull HttpHeaders headers, @NonNull HttpStatus status, @NonNull WebRequest request) {
-        String errorMessage = "The researched page was not found, there is a problem with the request's uri.";
+
+        String errorMessage = "The researched page was not found : "+ex.getMessage();
         log.error(errorMessage);
         return buildResponseEntity(new TourGuideError(NOT_FOUND, errorMessage));
     }
