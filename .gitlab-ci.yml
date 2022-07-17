@@ -20,7 +20,7 @@ build:
 
   artifacts:
     paths:
-      - /generatedFiles
+      - $CI_PROJECT_DIR/generatedFiles/
 
 test:
   stage: test
@@ -33,7 +33,7 @@ test:
       - .gradle
   artifacts:
     paths:
-      - /genratedFiles
+      - $CI_PROJECT_DIR/genratedFiles/
 
 
 
