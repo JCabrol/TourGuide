@@ -33,7 +33,7 @@ test:
       - .gradle
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/genratedFiles/
+      - $CI_PROJECT_DIR/generatedFiles/
 
 
 
