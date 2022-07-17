@@ -18,4 +18,8 @@ build:
       - build
       - .gradle
 
+  artifacts:
+    paths:
+      - binaries/
+
 
