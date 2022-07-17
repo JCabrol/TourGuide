@@ -20,6 +20,20 @@ build:
 
   artifacts:
     paths:
-      - binaries/
+      - TourGuide/*.jar
+
+test:
+  stage: test
+  script: gradle test
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - test
+      - .gradle
+  artifacts:
+    paths:
+      - TourGuide/
+
 
 
