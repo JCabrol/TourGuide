@@ -22,3 +22,16 @@ build:
     paths:
       - $CI_PROJECT_DIR/generatedFiles
 
+test:
+  stage: test
+  script: gradle jacocoTestReport
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - $CI_PROJECT_DIR/build
+      - $CI_PROJECT_DIR/.gradle
+
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/generatedFiles
