@@ -246,7 +246,7 @@ public class UserServiceImpl implements UserService {
         user.setVisitedLocations(userVisitedLocationList);
         user.setLatestLocationTimestamp(newVisitedLocation.timeVisited);
         userRepository.updateUser(user);
-        String message = "An new VisitedLocation has been added for user "+user.getUserName()+".";
+        String message = "A new VisitedLocation has been added for user "+user.getUserName()+".";
         log.debug(message);
     }
 }

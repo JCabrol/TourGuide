@@ -1,41 +1,32 @@
-package tourGuide.unitTests;
+package tourGuide.integrationTests;
 
 import org.junit.Test;
 import org.junit.jupiter.api.Tag;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import tourGuide.exception.ObjectAlreadyExistingException;
-import tourGuide.exception.ObjectNotFoundException;
-import tourGuide.model.DTO.UserDTO;
-import tourGuide.model.DTO.UserPreferencesDTO;
 import tourGuide.service.UserService;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 @Tag("controllerTests")
 @Tag("userTests")
-@ActiveProfiles("unitTest")
-public class UserControllerUnitTests {
+public class UserControllerIntegrationTests {
 
-
-    @MockBean
+    @Autowired
     private UserService userService;
 
     @Autowired
@@ -47,12 +38,7 @@ public class UserControllerUnitTests {
 
         //GIVEN
         // an existing user
-        String username = "name";
-        String phoneNumber = "phoneNumber";
-        String email = "email";
-        UserDTO user = new UserDTO(username, phoneNumber, email);
-        when(userService.getUserDTO(username)).thenReturn(user);
-
+        String username = "internalUser1";
 
         //WHEN
         // the uri "/getUser" is called with the userName parameter
@@ -63,10 +49,8 @@ public class UserControllerUnitTests {
                 // the status is "isOk" and the expected user information is returned
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userName", is(username)))
-                .andExpect(jsonPath("$.phoneNumber", is(phoneNumber)))
-                .andExpect(jsonPath("$.emailAddress", is(email)));
-        // and the expected methods have been called with expected arguments
-        verify(userService, Mockito.times(1)).getUserDTO(username);
+                .andExpect(jsonPath("$.phoneNumber", is("000")))
+                .andExpect(jsonPath("$.emailAddress", is(username + "@tourGuide.com")));
     }
 
     @Test
@@ -76,9 +60,6 @@ public class UserControllerUnitTests {
         //GIVEN
         // a non-existing user
         String username = "name1";
-        ObjectNotFoundException objectNotFoundException = new ObjectNotFoundException("error message");
-        when(userService.getUserDTO(username)).thenThrow(objectNotFoundException);
-
 
         //WHEN
         // the uri "/getUser" is called with the userName parameter
@@ -88,9 +69,8 @@ public class UserControllerUnitTests {
                 //THEN
                 // the status is "isNotFound" and the expected error message is returned
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("error message"));
-        // and the expected methods have been called with expected arguments
-        verify(userService, Mockito.times(1)).getUserDTO(username);
+                .andExpect(content().string("The user whose name is " + username + " was not found."));
+
     }
 
     @Test
@@ -100,7 +80,6 @@ public class UserControllerUnitTests {
         //GIVEN
         // no user given in parameter
 
-
         //WHEN
         // the uri "/getUser" is called with the userName parameter
         mockMvc.perform(get("/getUser"))
@@ -109,8 +88,6 @@ public class UserControllerUnitTests {
                 // the status is "isBadRequest" and the expected error message is returned
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("The request is not correct : a request parameter is missing or wrong.\n"));
-        // and the expected methods have been called with expected arguments
-        verify(userService, Mockito.times(0)).getUserDTO(any(String.class));
     }
 
     @Test
@@ -122,8 +99,7 @@ public class UserControllerUnitTests {
         String userName = "name";
         String phoneNumber = "phoneNumber";
         String email = "email";
-        final ArgumentCaptor<UserDTO> arg = ArgumentCaptor.forClass(UserDTO.class);
-        doNothing().when(userService).addNewUser(any(UserDTO.class));
+        int numberOfUser = userService.getAllUsers().size();
 
         //WHEN
         // the uri "/createUser" is called with all parameters
@@ -136,12 +112,10 @@ public class UserControllerUnitTests {
                 // the status is "isOk" and the expected succeed message is returned
                 .andExpect(status().isOk())
                 .andExpect(content().string("The user with name " + userName + " has been added."));
-        // and the expected methods have been called with expected arguments
-        verify(userService).addNewUser(arg.capture());
-        assertEquals(userName, arg.getValue().getUserName());
-        assertEquals(phoneNumber, arg.getValue().getPhoneNumber());
-        assertEquals(email, arg.getValue().getEmailAddress());
-        verify(userService, Mockito.times(1)).addNewUser(any(UserDTO.class));
+        assertEquals(userService.getUser(userName).getUserName(), userName);
+        assertEquals(userService.getUser(userName).getPhoneNumber(), phoneNumber);
+        assertEquals(userService.getUser(userName).getEmailAddress(), email);
+        assertEquals(numberOfUser+1, userService.getAllUsers().size());
     }
 
     @Test
@@ -151,8 +125,7 @@ public class UserControllerUnitTests {
         //GIVEN
         // only userName for userDTO
         String userName = "name";
-        final ArgumentCaptor<UserDTO> arg = ArgumentCaptor.forClass(UserDTO.class);
-        doNothing().when(userService).addNewUser(any(UserDTO.class));
+        int numberOfUser = userService.getAllUsers().size();
 
         //WHEN
         // the uri "/createUser" is called with only userName parameter
@@ -163,12 +136,10 @@ public class UserControllerUnitTests {
                 // the status is "isOk" and the expected succeed message is returned
                 .andExpect(status().isOk())
                 .andExpect(content().string("The user with name " + userName + " has been added."));
-        // and the expected methods have been called with expected arguments
-        verify(userService).addNewUser(arg.capture());
-        assertEquals(userName, arg.getValue().getUserName());
-        assertNull(arg.getValue().getPhoneNumber());
-        assertNull(arg.getValue().getEmailAddress());
-        verify(userService, Mockito.times(1)).addNewUser(any(UserDTO.class));
+        assertEquals(userService.getUser(userName).getUserName(), userName);
+        assertNull(userService.getUser(userName).getPhoneNumber());
+        assertNull(userService.getUser(userName).getEmailAddress());
+        assertEquals(numberOfUser+1, userService.getAllUsers().size());
     }
 
     @Test
@@ -177,7 +148,7 @@ public class UserControllerUnitTests {
 
         //GIVEN
         // no parameter given
-
+        int numberOfUser = userService.getAllUsers().size();
 
         //WHEN
         // the uri "/createUser" is called without parameter
@@ -187,8 +158,7 @@ public class UserControllerUnitTests {
                 // the status is "isBadRequest" and the expected error message is returned
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("The request is not correct : a request parameter is missing or wrong.\n"));
-        // and the expected methods have been called with expected arguments
-        verify(userService, Mockito.times(0)).addNewUser(any(UserDTO.class));
+        assertEquals(numberOfUser, userService.getAllUsers().size());
     }
 
     @Test
@@ -196,12 +166,11 @@ public class UserControllerUnitTests {
     public void createUserAlreadyExistingTest() throws Exception {
 
         //GIVEN
-        // a ObjectAlreadyExistingException thrown by userService
-        String userName = "name";
+        // a user already existing
+        String userName = "internalUser1";
         String phoneNumber = "phoneNumber";
         String email = "email";
-        ObjectAlreadyExistingException objectAlreadyExistingException = new ObjectAlreadyExistingException("error message");
-        doThrow(objectAlreadyExistingException).when(userService).addNewUser(any(UserDTO.class));
+        int numberOfUser = userService.getAllUsers().size();
 
         //WHEN
         // the uri "/createUser" is called with all parameters
@@ -213,9 +182,8 @@ public class UserControllerUnitTests {
                 //THEN
                 // the status is "isBadRequest" and the expected error message is returned
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("error message"));
-        // and the expected methods have been called with expected arguments
-        verify(userService, Mockito.times(1)).addNewUser(any(UserDTO.class));
+                .andExpect(content().string("The user whose name is " + userName + " was already existing, so it couldn't have been added."));
+        assertEquals(numberOfUser, userService.getAllUsers().size());
     }
 
     @Test
@@ -224,11 +192,10 @@ public class UserControllerUnitTests {
 
         //GIVEN
         // all information for userDTO
-        String userName = "name";
+        String userName = "internalUser1";
         String phoneNumber = "phoneNumber";
         String email = "email";
-        final ArgumentCaptor<UserDTO> arg = ArgumentCaptor.forClass(UserDTO.class);
-        doNothing().when(userService).updateUser(any(UserDTO.class));
+        int numberOfUser = userService.getAllUsers().size();
 
         //WHEN
         // the uri "/updateUser" is called with all parameters
@@ -241,12 +208,10 @@ public class UserControllerUnitTests {
                 // the status is "isOk" and the expected succeed message is returned
                 .andExpect(status().isOk())
                 .andExpect(content().string("The user with name " + userName + " has been updated."));
-        // and the expected methods have been called with expected arguments
-        verify(userService).updateUser(arg.capture());
-        assertEquals(userName, arg.getValue().getUserName());
-        assertEquals(phoneNumber, arg.getValue().getPhoneNumber());
-        assertEquals(email, arg.getValue().getEmailAddress());
-        verify(userService, Mockito.times(1)).updateUser(any(UserDTO.class));
+        assertEquals(userService.getUser(userName).getUserName(), userName);
+        assertEquals(userService.getUser(userName).getPhoneNumber(), phoneNumber);
+        assertEquals(userService.getUser(userName).getEmailAddress(), email);
+        assertEquals(numberOfUser, userService.getAllUsers().size());
     }
 
     @Test
@@ -255,9 +220,8 @@ public class UserControllerUnitTests {
 
         //GIVEN
         // only userName for userDTO
-        String userName = "name";
-        final ArgumentCaptor<UserDTO> arg = ArgumentCaptor.forClass(UserDTO.class);
-        doNothing().when(userService).updateUser(any(UserDTO.class));
+        String userName = "internalUser1";
+        int numberOfUser = userService.getAllUsers().size();
 
         //WHEN
         // the uri "/updateUser" is called with only userName parameter
@@ -268,12 +232,10 @@ public class UserControllerUnitTests {
                 // the status is "isOk" and the expected succeed message is returned
                 .andExpect(status().isOk())
                 .andExpect(content().string("The user with name " + userName + " has been updated."));
-        // and the expected methods have been called with expected arguments
-        verify(userService).updateUser(arg.capture());
-        assertEquals(userName, arg.getValue().getUserName());
-        assertNull(arg.getValue().getPhoneNumber());
-        assertNull(arg.getValue().getEmailAddress());
-        verify(userService, Mockito.times(1)).updateUser(any(UserDTO.class));
+        assertEquals(userService.getUser(userName).getUserName(), userName);
+        assertEquals(userService.getUser(userName).getPhoneNumber(), "000");
+        assertEquals(userService.getUser(userName).getEmailAddress(), userName + "@tourGuide.com");
+        assertEquals(numberOfUser, userService.getAllUsers().size());
     }
 
     @Test
@@ -282,7 +244,7 @@ public class UserControllerUnitTests {
 
         //GIVEN
         // no parameter given
-
+        int numberOfUser = userService.getAllUsers().size();
 
         //WHEN
         // the uri "/updateUser" is called without parameter
@@ -292,8 +254,7 @@ public class UserControllerUnitTests {
                 // the status is "isBadRequest" and the expected error message is returned
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("The request is not correct : a request parameter is missing or wrong.\n"));
-        // and the expected methods have been called with expected arguments
-        verify(userService, Mockito.times(0)).updateUser(any(UserDTO.class));
+        assertEquals(numberOfUser, userService.getAllUsers().size());
     }
 
     @Test
@@ -305,8 +266,7 @@ public class UserControllerUnitTests {
         String userName = "name";
         String phoneNumber = "phoneNumber";
         String email = "email";
-        ObjectNotFoundException objectNotFoundException = new ObjectNotFoundException("error message");
-        doThrow(objectNotFoundException).when(userService).updateUser(any(UserDTO.class));
+        int numberOfUser = userService.getAllUsers().size();
 
         //WHEN
         // the uri "/updateUser" is called with all parameters
@@ -318,9 +278,8 @@ public class UserControllerUnitTests {
                 //THEN
                 // the status is "isNotFound" and the expected error message is returned
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("error message"));
-        // and the expected methods have been called with expected arguments
-        verify(userService, Mockito.times(1)).updateUser(any(UserDTO.class));
+                .andExpect(content().string("The user whose name is " + userName + " was not found."));
+        assertEquals(numberOfUser, userService.getAllUsers().size());
     }
 
     @Test
@@ -329,8 +288,8 @@ public class UserControllerUnitTests {
 
         //GIVEN
         // all information for userDTO
-        String userName = "name";
-        doNothing().when(userService).deleteUser(userName);
+        String userName = "internalUser1";
+        int numberOfUser = userService.getAllUsers().size();
 
         //WHEN
         // the uri "/deleteUser" is called with userName parameter
@@ -341,8 +300,7 @@ public class UserControllerUnitTests {
                 // the status is "isOk" and the expected succeed message is returned
                 .andExpect(status().isOk())
                 .andExpect(content().string("The user with name " + userName + " has been deleted."));
-        // and the expected methods have been called with expected arguments
-        verify(userService, Mockito.times(1)).deleteUser(userName);
+        assertEquals(numberOfUser-1, userService.getAllUsers().size());
     }
 
     @Test
@@ -352,8 +310,7 @@ public class UserControllerUnitTests {
         //GIVEN
         // all information for userDTO
         String userName = "name";
-        ObjectNotFoundException objectNotFoundException = new ObjectNotFoundException("error message");
-        doThrow(objectNotFoundException).when(userService).deleteUser(userName);
+        int numberOfUser = userService.getAllUsers().size();
 
         //WHEN
         // the uri "/deleteUser" is called with userName parameter
@@ -363,9 +320,9 @@ public class UserControllerUnitTests {
                 //THEN
                 // the status is "isNotFound" and the expected error message is returned
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("error message"));
-        // and the expected methods have been called with expected arguments
-        verify(userService, Mockito.times(1)).deleteUser(userName);
+                .andExpect(content().string("The user whose name is " + userName + " was not found."));
+        assertEquals(numberOfUser, userService.getAllUsers().size());
+
     }
 
     @Test
@@ -374,7 +331,7 @@ public class UserControllerUnitTests {
 
         //GIVEN
         // no parameter
-
+        int numberOfUser = userService.getAllUsers().size();
 
         //WHEN
         // the uri "/deleteUser" is called with no parameter
@@ -384,8 +341,7 @@ public class UserControllerUnitTests {
                 // the status is "isBadRequest" and the expected error message is returned
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("The request is not correct : a request parameter is missing or wrong.\n"));
-        // and the expected methods have been called with expected arguments
-        verify(userService, Mockito.times(0)).deleteUser(any(String.class));
+        assertEquals(numberOfUser, userService.getAllUsers().size());
     }
 
     @Test
@@ -394,10 +350,7 @@ public class UserControllerUnitTests {
 
         //GIVEN
         // an existing user
-        String username = "name";
-        UserPreferencesDTO userPreferencesDTO = new UserPreferencesDTO(100, "EUR", 0, 1000, 5, 3, 2, 2);
-        when(userService.getUserPreferences(username)).thenReturn(userPreferencesDTO);
-
+        String username = "internalUser1";
 
         //WHEN
         // the uri "/getUserPreferences" is called with the userName parameter
@@ -407,16 +360,14 @@ public class UserControllerUnitTests {
                 //THEN
                 // the status is "isOk" and the expected userPreferences information is returned
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.attractionProximity", is(100)))
-                .andExpect(jsonPath("$.currency", is("EUR")))
+                .andExpect(jsonPath("$.attractionProximity", is(Integer.MAX_VALUE)))
+                .andExpect(jsonPath("$.currency", is("USD")))
                 .andExpect(jsonPath("$.lowerPricePoint", is(0)))
-                .andExpect(jsonPath("$.highPricePoint", is(1000)))
+                .andExpect(jsonPath("$.highPricePoint", is(Integer.MAX_VALUE)))
                 .andExpect(jsonPath("$.tripDuration", is(5)))
-                .andExpect(jsonPath("$.ticketQuantity", is(3)))
+                .andExpect(jsonPath("$.ticketQuantity", is(1)))
                 .andExpect(jsonPath("$.numberOfAdults", is(2)))
                 .andExpect(jsonPath("$.numberOfChildren", is(2)));
-        // and the expected methods have been called with expected arguments
-        verify(userService, Mockito.times(1)).getUserPreferences(username);
     }
 
     @Test
@@ -424,11 +375,8 @@ public class UserControllerUnitTests {
     public void getUserPreferencesNotFoundTest() throws Exception {
 
         //GIVEN
-        // an existing user
+        // a non-existing user
         String userName = "userName";
-        ObjectNotFoundException objectNotFoundException = new ObjectNotFoundException("error message");
-        when(userService.getUserPreferences(userName)).thenThrow(objectNotFoundException);
-
 
         //WHEN
         // the uri "/getUserPreferences" is called with the userName parameter
@@ -438,9 +386,7 @@ public class UserControllerUnitTests {
                 //THEN
                 // the status is "isNotFound" and the expected error message is returned
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("error message"));
-        // and the expected methods have been called with expected arguments
-        verify(userService, Mockito.times(1)).getUserPreferences(userName);
+                .andExpect(content().string("The user whose name is " + userName + " was not found."));
     }
 
     @Test
@@ -458,8 +404,6 @@ public class UserControllerUnitTests {
                 // the status is "isBadRequest" and the expected error message is returned
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("The request is not correct : a request parameter is missing or wrong.\n"));
-        // and the expected methods have been called with expected arguments
-        verify(userService, Mockito.times(0)).getUserPreferences(any(String.class));
     }
 
     @Test
@@ -468,17 +412,15 @@ public class UserControllerUnitTests {
 
         //GIVEN
         // all information for userPreferencesDTO
-        String userName = "userName";
-        Integer attractionProximity = 100;
+        String userName = "internalUser1";
+        int attractionProximity = 100;
         String currency = "EUR";
-        Integer lowerPricePoint = 0;
-        Integer highPricePoint = 1000;
-        Integer tripDuration = 5;
-        Integer ticketQuantity = 3;
-        Integer numberOfAdults = 2;
-        Integer numberOfChildren = 2;
-        final ArgumentCaptor<UserPreferencesDTO> arg = ArgumentCaptor.forClass(UserPreferencesDTO.class);
-        doNothing().when(userService).updateUserPreferences(eq(userName), any(UserPreferencesDTO.class));
+        int lowerPricePoint = 10;
+        int highPricePoint = 1000;
+       int tripDuration = 4;
+        int ticketQuantity = 8;
+        int numberOfAdults = 1;
+        int numberOfChildren = 1;
 
         //WHEN
         // the uri "/updateUserPreferences" is called with all parameters
@@ -497,16 +439,13 @@ public class UserControllerUnitTests {
                 // the status is "isOk" and the expected succeed message is returned
                 .andExpect(status().isOk())
                 .andExpect(content().string("The preferences for user " + userName + " have been updated."));
-        // and the expected methods have been called with expected arguments
-        verify(userService).updateUserPreferences(any(String.class), arg.capture());
-        assertEquals(currency, arg.getValue().getCurrency());
-        assertEquals(numberOfAdults, arg.getValue().getNumberOfAdults());
-        assertEquals(attractionProximity, arg.getValue().getAttractionProximity());
-        assertEquals(lowerPricePoint, arg.getValue().getLowerPricePoint());
-        assertEquals(highPricePoint, arg.getValue().getHighPricePoint());
-        assertEquals(tripDuration, arg.getValue().getTripDuration());
-        assertEquals(ticketQuantity, arg.getValue().getTicketQuantity());
-        assertEquals(numberOfChildren, arg.getValue().getNumberOfChildren());
-        verify(userService, Mockito.times(1)).updateUserPreferences(eq(userName), any(UserPreferencesDTO.class));
+        assertEquals(currency, userService.getUser(userName).getUserPreferences().getCurrency().getCurrencyCode());
+        assertEquals(numberOfAdults, userService.getUser(userName).getUserPreferences().getNumberOfAdults());
+        assertEquals(attractionProximity, userService.getUser(userName).getUserPreferences().getAttractionProximity());
+        assertEquals(lowerPricePoint, userService.getUser(userName).getUserPreferences().getLowerPricePoint().getNumber().intValueExact());
+        assertEquals(highPricePoint, userService.getUser(userName).getUserPreferences().getHighPricePoint().getNumber().intValueExact());
+        assertEquals(tripDuration,userService.getUser(userName).getUserPreferences().getTripDuration());
+        assertEquals(ticketQuantity, userService.getUser(userName).getUserPreferences().getTicketQuantity());
+        assertEquals(numberOfChildren, userService.getUser(userName).getUserPreferences().getNumberOfChildren());
     }
 }

@@ -387,7 +387,7 @@ public class TourGuideServiceUnitTests {
         // trackAllUsers is called
         List<VisitedLocation> result = tourGuideService.trackAllUsers(userList);
         int numberOfThread = Thread.currentThread().getThreadGroup().activeCount();
-        TimeUnit.MILLISECONDS.sleep(1000);
+        TimeUnit.MILLISECONDS.sleep(2000);
 
         //THEN
         // the expected list of visitedLocations is returned and the method is running with several threads

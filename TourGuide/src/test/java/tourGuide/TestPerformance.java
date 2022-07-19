@@ -61,7 +61,7 @@ public class TestPerformance {
      */
     @Before
     public void init() {
-        InternalTestHelper.setInternalUserNumber(100000);
+        InternalTestHelper.setInternalUserNumber(10000);
     }
 
     @Test
