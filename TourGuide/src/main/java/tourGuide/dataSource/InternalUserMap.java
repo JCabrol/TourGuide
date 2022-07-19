@@ -42,11 +42,7 @@ public class InternalUserMap {
 
     private void generateUserLocationHistory(User user) {
         List<VisitedLocation> visitedLocationList = new ArrayList<>();
-        IntStream.range(0, 3).forEach(i -> {
-            Date date = getRandomTime();
-            visitedLocationList.add(new VisitedLocation(user.getUserId(), new Location(generateRandomLatitude(), generateRandomLongitude()),date ));
-            user.setLatestLocationTimestamp(date);
-        });
+        IntStream.range(0, 3).forEach(i -> visitedLocationList.add(new VisitedLocation(user.getUserId(), new Location(generateRandomLatitude(), generateRandomLongitude()), getRandomTime())));
         user.setVisitedLocations(visitedLocationList);
     }
 

@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
     public void addNewUser(UserDTO userDTO) throws ObjectAlreadyExistingException {
         User user = new User(UUID.randomUUID(), userDTO.getUserName(), userDTO.getPhoneNumber(), userDTO.getEmailAddress());
         userRepository.addUser(user);
-        String message = "The user with name "+userDTO.getUserName()+" have been created.";
+        String message = "The user with name " + userDTO.getUserName() + " have been created.";
         log.debug(message);
     }
 
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
             user.setPhoneNumber(userDTO.getPhoneNumber());
         }
         userRepository.updateUser(user);
-        String message = "The user with name "+userDTO.getUserName()+" have been updated.";
+        String message = "The user with name " + userDTO.getUserName() + " have been updated.";
         log.debug(message);
     }
 
@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(String userName) throws ObjectNotFoundException {
         User user = getUser(userName);
         userRepository.deleteUser(user);
-        String message = "The user with name "+userName+" have been deleted.";
+        String message = "The user with name " + userName + " have been deleted.";
         log.debug(message);
     }
 
@@ -145,7 +145,7 @@ public class UserServiceImpl implements UserService {
     /**
      * Update the user's preferences
      *
-     * @param userName the name of the user whose preferences have to be updated
+     * @param userName           the name of the user whose preferences have to be updated
      * @param userPreferencesDTO a UserPreferencesDTO object containing information to update about user's preferences
      * @throws ObjectNotFoundException when the user is not found
      */
@@ -182,7 +182,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setUserPreferences(userPreferences);
         userRepository.updateUser(user);
-        String message = "The preferences for user "+userName+" have been updated.";
+        String message = "The preferences for user " + userName + " have been updated.";
         log.debug(message);
     }
 
@@ -199,7 +199,7 @@ public class UserServiceImpl implements UserService {
     /**
      * Add rewards to a user
      *
-     * @param user the user whose rewards have to be added
+     * @param user       the user whose rewards have to be added
      * @param userReward the rewards to add
      */
     @Override
@@ -208,7 +208,7 @@ public class UserServiceImpl implements UserService {
         userRewardList.add(userReward);
         user.setUserRewards(userRewardList);
         userRepository.updateUser(user);
-        String message = "New rewards have been added for user "+user.getUserName()+".";
+        String message = "New rewards have been added for user " + user.getUserName() + ".";
         log.debug(message);
     }
 
@@ -223,12 +223,16 @@ public class UserServiceImpl implements UserService {
         VisitedLocation lastVisitedLocation = null;
         List<VisitedLocation> userVisitedLocationList = user.getVisitedLocations();
         if (userVisitedLocationList.size() != 0) {
-            lastVisitedLocation = userVisitedLocationList
-                    .stream()
-                    .parallel()
-                    .filter(visitedLocation -> visitedLocation.timeVisited.equals(user.getLatestLocationTimestamp()))
-                    .collect(Collectors.toList())
-                    .get(0);
+            if (userVisitedLocationList.stream().parallel().anyMatch(visitedLocation -> visitedLocation.timeVisited.equals(user.getLatestLocationTimestamp()))) {
+                lastVisitedLocation = userVisitedLocationList
+                        .stream()
+                        .parallel()
+                        .filter(visitedLocation -> visitedLocation.timeVisited.equals(user.getLatestLocationTimestamp()))
+                        .collect(Collectors.toList())
+                        .get(0);
+            } else {
+                lastVisitedLocation = userVisitedLocationList.get(userVisitedLocationList.size() - 1);
+            }
         }
         return lastVisitedLocation;
     }
@@ -236,7 +240,7 @@ public class UserServiceImpl implements UserService {
     /**
      * Add a new VisitedLocation to the given user
      *
-     * @param user the user to which a visitedLocation have to be added
+     * @param user               the user to which a visitedLocation have to be added
      * @param newVisitedLocation the visitedLocation to add
      */
     @Override
@@ -246,7 +250,7 @@ public class UserServiceImpl implements UserService {
         user.setVisitedLocations(userVisitedLocationList);
         user.setLatestLocationTimestamp(newVisitedLocation.timeVisited);
         userRepository.updateUser(user);
-        String message = "A new VisitedLocation has been added for user "+user.getUserName()+".";
+        String message = "A new VisitedLocation has been added for user " + user.getUserName() + ".";
         log.debug(message);
     }
 }
