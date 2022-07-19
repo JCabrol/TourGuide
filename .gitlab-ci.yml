@@ -19,7 +19,7 @@ before_script:
 
 build:
   stage: build
-  script: ./gradlew --build-cache assemble
+  script: $chmod +x ./gradlew --build-cache assemble
   artifacts:
     paths:
       - generatedFiles/*.jar
@@ -29,7 +29,7 @@ build:
 test:
   stage: test
   script:
-    - ./gradlew test
+    - $chmod +x ./gradlew test
   artifacts:
     when: always
     reports:
