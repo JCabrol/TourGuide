@@ -1,5 +1,14 @@
 image: gradle:4.8.1-jdk8
 
+stages:
+  - build
+  - test
+
+cache:
+  paths:
+    - build
+    - .gradle
+
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
@@ -10,28 +19,18 @@ before_script:
 
 build:
   stage: build
-  script: gradle build
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: push
-    paths:
-      - $CI_PROJECT_DIR/build
-      - $CI_PROJECT_DIR/.gradle
-
+  script: ./gradlew --build-cache assemble
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/generatedFiles
+      - generatedFiles/*.jar
+  only:
+    - main
 
 test:
   stage: test
-  script: gradle jacocoTestReport
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: push
-    paths:
-      - $CI_PROJECT_DIR/build
-      - $CI_PROJECT_DIR/.gradle
-
+  script:
+    - ./gradlew test
   artifacts:
-    paths:
-      - $CI_PROJECT_DIR/generatedFiles
+    when: always
+    reports:
+      junit: generatedFiles/TEST-*.xml
