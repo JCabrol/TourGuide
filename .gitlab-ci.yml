@@ -22,13 +22,13 @@ build:
   script: gradle --build-cache bootJar
   artifacts:
     paths:
-      - TourGuideProject/TourGuide/build/libs/tourGuide-1.0.0.jar
+      - tourGuide-1.0.0.jar
 
 test:
   stage: test
   script: gradle test
   artifacts:
     paths:
-      - TourGuideProject/TourGuide/build/reports/tests/test/index.html
-      - TourGuideProject/TourGuide/build/jacocoHtml/index.html
+      - index.html
+    
      
