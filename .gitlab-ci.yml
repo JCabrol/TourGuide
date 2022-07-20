@@ -19,12 +19,8 @@ before_script:
 
 build:
   stage: build
-  script: gradle --build-cache assemble
-  artifacts:
-    paths:
-      - generatedFiles/*.jar
-  only:
-    - main
+  script: gradle --build-cache bootJar
+ 
 
 test:
   stage: test
@@ -33,4 +29,5 @@ test:
   artifacts:
     when: always
     reports:
-      junit: generatedFiles/TEST-*.xml
+      junit: ${buildDir}/report
+      jacoco: ${buildDir}/jacocoHtml
