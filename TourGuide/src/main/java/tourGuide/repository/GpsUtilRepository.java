@@ -11,15 +11,27 @@ import java.util.UUID;
 
 @Repository
 public class GpsUtilRepository {
-    private static final Locale locale = new Locale("en", "US");
-    private final GpsUtil gpsUtil=new GpsUtil();
 
-    public VisitedLocation getUserLocation(UUID userId){
+    private static final Locale locale = new Locale("en", "US");
+    private final GpsUtil gpsUtil = new GpsUtil();
+
+    /**
+     * Get a visited location from a userId
+     *
+     * @param userId a UUID object which is the identifiant of the user
+     * @return a visitedLocation
+     */
+    public VisitedLocation getUserLocation(UUID userId) {
         Locale.setDefault(locale);
         return gpsUtil.getUserLocation(userId);
     }
 
-    public List<Attraction> getAttractions(){
+    /**
+     * Get the list of all existing attractions
+     *
+     * @return a list of attractions containing all existing attractions
+     */
+    public List<Attraction> getAttractions() {
         return gpsUtil.getAttractions();
     }
 }

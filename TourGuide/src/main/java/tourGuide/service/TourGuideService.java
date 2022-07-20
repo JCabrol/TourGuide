@@ -46,7 +46,7 @@ public interface TourGuideService {
      * @param user the user whose location is tracked
      * @return the actual user VisitedLocation
      */
-    VisitedLocation trackUserLocation(User user) throws Exception;
+    VisitedLocation trackUserLocation(User user);
 
     /**
      * Get the five closest attractions from a visitedLocation, whatever the distance,

@@ -1,6 +1,5 @@
 package tourGuide.integrationTests;
 
-import gpsUtil.location.VisitedLocation;
 import org.junit.Test;
 import org.junit.jupiter.api.Tag;
 import org.junit.runner.RunWith;
@@ -10,12 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import tourGuide.model.User;
-import tourGuide.service.RewardsService;
-import tourGuide.service.UserService;
-
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.iterableWithSize;
@@ -27,14 +20,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Tag("controllerTests")
 @Tag("tourGuideTests")
-@ActiveProfiles({"integrationTest","test"})
+@ActiveProfiles({"integrationTest", "test"})
 public class TourGuideControllerIntegrationTests {
-
-
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private RewardsService rewardsService;
 
 
     @Autowired
@@ -179,11 +166,7 @@ public class TourGuideControllerIntegrationTests {
 
         //GIVEN
         // an existing user with rewards
-        String username = "internalUser2";
-        User user = userService.getUser(username);
-        userService.addUserNewVisitedLocation(user, new VisitedLocation(user.getUserId(), rewardsService.getAttractionList().get(1), new Date()));
-        rewardsService.calculateRewards(user);
-        TimeUnit.MILLISECONDS.sleep(2000);
+        String username = "internalUserWithRewards";
 
         //WHEN
         // the uri "/getRewards" is called with the userName parameter
@@ -193,12 +176,10 @@ public class TourGuideControllerIntegrationTests {
                 // the status is "isOk" and the expected information is returned
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", iterableWithSize(1)))
-                .andExpect(jsonPath("$.[0].visitedLocation.location.longitude", is(rewardsService.getAttractionList().get(1).longitude)))
-                .andExpect(jsonPath("$.[0].visitedLocation.location.latitude", is(rewardsService.getAttractionList().get(1).latitude)))
-                .andExpect(jsonPath("$.[0].attraction.attractionName", is(rewardsService.getAttractionList().get(1).attractionName)))
-                .andExpect(jsonPath("$.[0].attraction.longitude", is(rewardsService.getAttractionList().get(1).longitude)))
-                .andExpect(jsonPath("$.[0].attraction.latitude", is(rewardsService.getAttractionList().get(1).latitude)))
-                .andExpect(jsonPath("$.[0].rewardPoints").isNumber());
+                .andExpect(jsonPath("$.[0].attraction.attractionName", is("AttractionName")))
+                .andExpect(jsonPath("$.[0].attraction.city", is("AttractionCity")))
+                .andExpect(jsonPath("$.[0].attraction.state", is("AttractionState")))
+                .andExpect(jsonPath("$.[0].rewardPoints", is(5)));
     }
 
     @Test

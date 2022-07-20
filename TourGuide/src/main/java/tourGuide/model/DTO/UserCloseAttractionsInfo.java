@@ -10,8 +10,17 @@ import java.util.List;
 @Setter
 public class UserCloseAttractionsInfo {
 
+    /**
+     * The latitude of the user's actual location.
+     */
     private double userLatitude;
+    /**
+     * The longitude of the user's actual location.
+     */
     private double userLongitude;
+    /**
+     * The list of five closest attraction from the user's location, with their information.
+     */
     private List<CloseAttraction> closeAttractions = new ArrayList<>();
 
 

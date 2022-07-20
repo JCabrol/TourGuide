@@ -95,6 +95,7 @@ public interface UserService {
      * Get the list of rewards for the given user
      *
      * @param user the user whose rewards are researched
+     * @return the list of userRewards for the user, an empty list if there are not any userRewards
      */
     List<UserReward> getUserRewards(User user);
 

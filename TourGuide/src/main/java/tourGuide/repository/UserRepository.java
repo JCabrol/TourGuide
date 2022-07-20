@@ -19,11 +19,22 @@ public class UserRepository {
     @Autowired
     private InternalUserMap internalUserMap;
 
-
+    /**
+     * Get all user registered in internalUserMap
+     *
+     * @return a list of all user registered
+     */
     public List<User> getUserList() {
         return internalUserMap.getInternalUserMap().values().parallelStream().collect(Collectors.toList());
     }
 
+    /**
+     * Get a user from its userName
+     *
+     * @param username the name of the researched user
+     * @return the researched user
+     * @throws ObjectNotFoundException if the userName is not found in internalUserMap
+     */
     public User getUserByName(String username) throws ObjectNotFoundException {
         if (internalUserMap.getInternalUserMap().containsKey(username)) {
             return internalUserMap.getInternalUserMap().get(username);
@@ -32,6 +43,13 @@ public class UserRepository {
         }
     }
 
+    /**
+     * Get a user from its id
+     *
+     * @param userId the id of the researched user
+     * @return the researched user
+     * @throws ObjectNotFoundException if the userId is not found in internalUserMap
+     */
     public User getUserById(UUID userId) throws ObjectNotFoundException {
         Supplier<Stream<User>> streamSupplier
                 = () -> getUserList().stream().parallel()
@@ -43,6 +61,12 @@ public class UserRepository {
         }
     }
 
+    /**
+     * Add a user in the internalUserMap
+     *
+     * @param user the user to add
+     * @throws ObjectAlreadyExistingException if the userName is already registered in internalUserMap
+     */
     public void addUser(User user) throws ObjectAlreadyExistingException {
 
         if (!internalUserMap.getInternalUserMap().containsKey(user.getUserName())) {
@@ -52,6 +76,12 @@ public class UserRepository {
         }
     }
 
+    /**
+     * Update a user
+     *
+     * @param user the user to update
+     * @throws ObjectNotFoundException if the userName is not found in internalUserMap
+     */
     public void updateUser(User user) throws ObjectNotFoundException {
         if (internalUserMap.getInternalUserMap().containsKey(user.getUserName())) {
             internalUserMap.getInternalUserMap().put(user.getUserName(), user);
@@ -60,6 +90,12 @@ public class UserRepository {
         }
     }
 
+    /**
+     * Delete a user
+     *
+     * @param user the user to delete
+     * @throws ObjectNotFoundException if the userName is not found in internalUserMap
+     */
     public void deleteUser(User user) throws ObjectNotFoundException {
         if (internalUserMap.getInternalUserMap().containsKey(user.getUserName())) {
             internalUserMap.getInternalUserMap().remove(user.getUserName());

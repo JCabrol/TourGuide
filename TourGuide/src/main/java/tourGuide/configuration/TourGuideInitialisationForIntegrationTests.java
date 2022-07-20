@@ -10,6 +10,7 @@ import tourGuide.dataSource.InternalUserMap;
 import tourGuide.service.RewardsService;
 
 @Slf4j
+//This configuration is only for integration tests which are running without tracker but with initializing InternalUserMap and attractionList
 @Profile("integrationTest")
 @Component
 public class TourGuideInitialisationForIntegrationTests implements ApplicationRunner {
@@ -26,6 +27,9 @@ public class TourGuideInitialisationForIntegrationTests implements ApplicationRu
 
     /**
      * Callback used to run the bean.
+     * Permit to initialize the internalUserMap with the chosen user number,
+     * and load Attractions into RewardsService's attractionList
+     * but doesn't run the tracker when the beans are created.
      *
      * @param args incoming application arguments
      */

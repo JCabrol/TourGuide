@@ -24,6 +24,13 @@ public class CalculatingRewardsTask extends RecursiveTask<List<RewardElements>> 
         this.rewardsService = rewardsService;
     }
 
+    /**
+     * Calculate recursively the rewardElements for which there are rewards to add
+     * A rewardElement contains a visitedLocation and an attraction
+     * RewardsElements are selected if the visitedLocation is close to an attraction and if the attraction is not already is the userRewards list
+     *
+     * @return a list of visitedLocations containing the actual location and the id of each user present in the given list as well as the date of being at this location
+     */
     @Override
     protected List<RewardElements> compute() {
         List<RewardElements> rewardElementsList = new ArrayList<>();

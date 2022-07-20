@@ -29,17 +29,32 @@ public class TourGuideServiceImpl implements TourGuideService {
     @Autowired
     private UserService userService;
 
-    //The tracker is used to track user locations. After finish, it sleeps five minutes and starts again.
+    /**
+     * The tracker is used to track all users locations.
+     * It starts when the application begin to run.
+     * After finish, it sleeps five minutes and starts again.
+     */
     private Tracker tracker;
+
+    /**
+     * A cachedThreadPool executorService so the necessary threads are automatically running and stopping.
+     */
     public ExecutorService executorServiceTourGuide = Executors.newCachedThreadPool();
+
+    /**
+     * A ForkJoinPool used to invoke a RecursiveTask called CalculatingRewardsTask.
+     */
     public ForkJoinPool forkJoinPool = new ForkJoinPool(30);
-    //This int is used to control the number of threads working at the same time in the executorService
+
+    /**
+     * A constant used to limit the number of threads working at the same time in the executorService when consuming visitedLocationQueue
+     */
     public static final int USER_CONSUMER_COUNT = 15;
 
 
     /**
-     * Permit to start a new tracker which is tracking all user's locations every fifteen minutes,
-     * the function also add shutDownHook to permit closing tracker's executorService
+     * Permit to start a new tracker which is tracking regularly all user's locations.
+     * The function also add shutDownHook to permit closing tracker's executorService.
      */
     @Override
     public void initializeTourGuideService() {

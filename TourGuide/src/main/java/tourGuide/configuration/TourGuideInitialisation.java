@@ -11,6 +11,9 @@ import tourGuide.service.RewardsService;
 import tourGuide.service.TourGuideService;
 
 @Slf4j
+//This configuration is disabled for unit tests which are running without initializing InternalUserMap and without tracker
+//This configuration is disabled for integration tests which are running without tracker
+//This configuration is used for performance tests and for running application
 @Profile("!test")
 @Component
 public class TourGuideInitialisation implements ApplicationRunner {
@@ -29,6 +32,10 @@ public class TourGuideInitialisation implements ApplicationRunner {
 
     /**
      * Callback used to run the bean.
+     * Permit to initialize the internalUserMap with the chosen user number,
+     * begin the tracker running
+     * and load Attractions into RewardsService's attractionList
+     * when the beans are created.
      *
      * @param args incoming application arguments
      */

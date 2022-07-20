@@ -9,6 +9,12 @@ import lombok.Getter;
 @AllArgsConstructor
 public class RewardElements {
 
+    /**
+     * The VisitedLocation for which reward has to be added.
+     */
     private VisitedLocation visitedLocation;
+    /**
+     * The attraction for which reward has to be added.
+     */
     private Attraction attraction;
 }

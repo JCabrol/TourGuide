@@ -18,6 +18,11 @@ public class CalculateLocationTask extends RecursiveTask<List<VisitedLocation>> 
         this.gpsUtilService = gpsUtilService;
     }
 
+    /**
+     * Calculate recursively the userLocation for all users in the userList, by calling gpsUtilService, and put it in a visitedLocationList
+     *
+     * @return a list of visitedLocations containing the actual location and the id of each user present in the given list as well as the date of being at this location
+     */
     @Override
     protected List<VisitedLocation> compute() {
         List<VisitedLocation> result = new ArrayList<>();
