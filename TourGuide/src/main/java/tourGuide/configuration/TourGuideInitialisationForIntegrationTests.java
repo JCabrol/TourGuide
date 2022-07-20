@@ -8,21 +8,18 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import tourGuide.dataSource.InternalUserMap;
 import tourGuide.service.RewardsService;
-import tourGuide.service.TourGuideService;
 
 @Slf4j
-@Profile("!test")
+@Profile("integrationTest")
 @Component
-public class TourGuideInitialisation implements ApplicationRunner {
+public class TourGuideInitialisationForIntegrationTests implements ApplicationRunner {
 
-    private final TourGuideService tourGuideService;
     private final RewardsService rewardsService;
     private final InternalUserMap internalUserMap;
 
 
     @Autowired
-    public TourGuideInitialisation(TourGuideService tourGuideService, RewardsService rewardsService, InternalUserMap internalUserMap) {
-        this.tourGuideService = tourGuideService;
+    public TourGuideInitialisationForIntegrationTests(RewardsService rewardsService, InternalUserMap internalUserMap) {
         this.rewardsService = rewardsService;
         this.internalUserMap = internalUserMap;
     }
@@ -40,7 +37,6 @@ public class TourGuideInitialisation implements ApplicationRunner {
             internalUserMap.initializeInternalUsers();
             log.info("Finished initializing users");
         }
-        tourGuideService.initializeTourGuideService();
         rewardsService.initializeRewardsService();
     }
 }

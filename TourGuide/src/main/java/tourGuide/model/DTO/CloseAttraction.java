@@ -6,7 +6,6 @@ import lombok.Setter;
 
 @AllArgsConstructor
 @Getter
-@Setter
 public class CloseAttraction {
 
     private String attractionName;

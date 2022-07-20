@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Tag("controllerTests")
 @Tag("userTests")
-@ActiveProfiles("unitTest")
+@ActiveProfiles({"unitTest","test"})
 public class UserControllerUnitTests {
 
 

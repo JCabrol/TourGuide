@@ -36,7 +36,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @Tag("serviceTests")
 @Tag("tourGuideTests")
-@ActiveProfiles("unitTest")
+@ActiveProfiles({"unitTest","test"})
 public class TourGuideServiceUnitTests {
 
     @Autowired
@@ -387,7 +387,7 @@ public class TourGuideServiceUnitTests {
         // trackAllUsers is called
         List<VisitedLocation> result = tourGuideService.trackAllUsers(userList);
         int numberOfThread = Thread.currentThread().getThreadGroup().activeCount();
-        TimeUnit.MILLISECONDS.sleep(2000);
+        TimeUnit.MILLISECONDS.sleep(5000);
 
         //THEN
         // the expected list of visitedLocations is returned and the method is running with several threads

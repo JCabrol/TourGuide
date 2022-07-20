@@ -32,7 +32,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @Tag("serviceTests")
 @Tag("rewardsTests")
-@ActiveProfiles("unitTest")
+@ActiveProfiles({"unitTest","test"})
 public class RewardsServiceUnitTests {
 
     @Autowired
@@ -254,7 +254,7 @@ public class RewardsServiceUnitTests {
         // calculateRewards is called
         rewardsService.calculateRewards(user);
         int numberOfThread = Thread.currentThread().getThreadGroup().activeCount();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(1000);
 
         //THEN
         // The method is running on several threads

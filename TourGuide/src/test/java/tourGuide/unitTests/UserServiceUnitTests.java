@@ -37,7 +37,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @Tag("serviceTests")
 @Tag("userTests")
-@ActiveProfiles("unitTest")
+@ActiveProfiles({"unitTest","test"})
 public class UserServiceUnitTests {
 
     @Autowired

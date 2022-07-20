@@ -1,29 +1,30 @@
 package tourGuide.integrationTests;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.jupiter.api.Tag;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import tourGuide.service.TourGuideService;
 import tourGuide.service.UserService;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 @Tag("controllerTests")
 @Tag("userTests")
+@ActiveProfiles({"integrationTest","test"})
 public class UserControllerIntegrationTests {
 
     @Autowired
@@ -59,7 +60,7 @@ public class UserControllerIntegrationTests {
 
         //GIVEN
         // a non-existing user
-        String username = "name1";
+        String username = "nameNonExisting";
 
         //WHEN
         // the uri "/getUser" is called with the userName parameter
@@ -96,7 +97,7 @@ public class UserControllerIntegrationTests {
 
         //GIVEN
         // all information for userDTO
-        String userName = "name";
+        String userName = "newName";
         String phoneNumber = "phoneNumber";
         String email = "email";
         int numberOfUser = userService.getAllUsers().size();
@@ -115,7 +116,7 @@ public class UserControllerIntegrationTests {
         assertEquals(userService.getUser(userName).getUserName(), userName);
         assertEquals(userService.getUser(userName).getPhoneNumber(), phoneNumber);
         assertEquals(userService.getUser(userName).getEmailAddress(), email);
-        assertEquals(numberOfUser+1, userService.getAllUsers().size());
+        assertEquals(numberOfUser + 1, userService.getAllUsers().size());
     }
 
     @Test
@@ -124,7 +125,7 @@ public class UserControllerIntegrationTests {
 
         //GIVEN
         // only userName for userDTO
-        String userName = "name";
+        String userName = "newName2";
         int numberOfUser = userService.getAllUsers().size();
 
         //WHEN
@@ -139,7 +140,7 @@ public class UserControllerIntegrationTests {
         assertEquals(userService.getUser(userName).getUserName(), userName);
         assertNull(userService.getUser(userName).getPhoneNumber());
         assertNull(userService.getUser(userName).getEmailAddress());
-        assertEquals(numberOfUser+1, userService.getAllUsers().size());
+        assertEquals(numberOfUser + 1, userService.getAllUsers().size());
     }
 
     @Test
@@ -192,7 +193,7 @@ public class UserControllerIntegrationTests {
 
         //GIVEN
         // all information for userDTO
-        String userName = "internalUser1";
+        String userName = "internalUser2";
         String phoneNumber = "phoneNumber";
         String email = "email";
         int numberOfUser = userService.getAllUsers().size();
@@ -220,7 +221,7 @@ public class UserControllerIntegrationTests {
 
         //GIVEN
         // only userName for userDTO
-        String userName = "internalUser1";
+        String userName = "internalUser3";
         int numberOfUser = userService.getAllUsers().size();
 
         //WHEN
@@ -263,7 +264,7 @@ public class UserControllerIntegrationTests {
 
         //GIVEN
         // a ObjectNotFoundException thrown by userService
-        String userName = "name";
+        String userName = "nameNonExisting";
         String phoneNumber = "phoneNumber";
         String email = "email";
         int numberOfUser = userService.getAllUsers().size();
@@ -288,7 +289,7 @@ public class UserControllerIntegrationTests {
 
         //GIVEN
         // all information for userDTO
-        String userName = "internalUser1";
+        String userName = "internalUser4";
         int numberOfUser = userService.getAllUsers().size();
 
         //WHEN
@@ -300,7 +301,7 @@ public class UserControllerIntegrationTests {
                 // the status is "isOk" and the expected succeed message is returned
                 .andExpect(status().isOk())
                 .andExpect(content().string("The user with name " + userName + " has been deleted."));
-        assertEquals(numberOfUser-1, userService.getAllUsers().size());
+        assertEquals(numberOfUser - 1, userService.getAllUsers().size());
     }
 
     @Test
@@ -309,7 +310,7 @@ public class UserControllerIntegrationTests {
 
         //GIVEN
         // all information for userDTO
-        String userName = "name";
+        String userName = "nameNonExisting";
         int numberOfUser = userService.getAllUsers().size();
 
         //WHEN
@@ -350,7 +351,7 @@ public class UserControllerIntegrationTests {
 
         //GIVEN
         // an existing user
-        String username = "internalUser1";
+        String username = "internalUser5";
 
         //WHEN
         // the uri "/getUserPreferences" is called with the userName parameter
@@ -376,7 +377,7 @@ public class UserControllerIntegrationTests {
 
         //GIVEN
         // a non-existing user
-        String userName = "userName";
+        String userName = "nameNonExisting";
 
         //WHEN
         // the uri "/getUserPreferences" is called with the userName parameter
@@ -412,12 +413,12 @@ public class UserControllerIntegrationTests {
 
         //GIVEN
         // all information for userPreferencesDTO
-        String userName = "internalUser1";
+        String userName = "internalUser6";
         int attractionProximity = 100;
         String currency = "EUR";
         int lowerPricePoint = 10;
         int highPricePoint = 1000;
-       int tripDuration = 4;
+        int tripDuration = 4;
         int ticketQuantity = 8;
         int numberOfAdults = 1;
         int numberOfChildren = 1;
@@ -444,7 +445,7 @@ public class UserControllerIntegrationTests {
         assertEquals(attractionProximity, userService.getUser(userName).getUserPreferences().getAttractionProximity());
         assertEquals(lowerPricePoint, userService.getUser(userName).getUserPreferences().getLowerPricePoint().getNumber().intValueExact());
         assertEquals(highPricePoint, userService.getUser(userName).getUserPreferences().getHighPricePoint().getNumber().intValueExact());
-        assertEquals(tripDuration,userService.getUser(userName).getUserPreferences().getTripDuration());
+        assertEquals(tripDuration, userService.getUser(userName).getUserPreferences().getTripDuration());
         assertEquals(ticketQuantity, userService.getUser(userName).getUserPreferences().getTicketQuantity());
         assertEquals(numberOfChildren, userService.getUser(userName).getUserPreferences().getNumberOfChildren());
     }

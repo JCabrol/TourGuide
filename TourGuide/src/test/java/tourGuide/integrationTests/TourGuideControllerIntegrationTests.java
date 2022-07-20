@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import tourGuide.model.User;
@@ -19,16 +19,15 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.iterableWithSize;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 @Tag("controllerTests")
 @Tag("tourGuideTests")
+@ActiveProfiles({"integrationTest","test"})
 public class TourGuideControllerIntegrationTests {
 
 
@@ -37,8 +36,10 @@ public class TourGuideControllerIntegrationTests {
     @Autowired
     private RewardsService rewardsService;
 
+
     @Autowired
     private MockMvc mockMvc;
+
 
     @Test
     @Tag("indexTest")
@@ -178,7 +179,7 @@ public class TourGuideControllerIntegrationTests {
 
         //GIVEN
         // an existing user with rewards
-        String username = "internalUser1";
+        String username = "internalUser2";
         User user = userService.getUser(username);
         userService.addUserNewVisitedLocation(user, new VisitedLocation(user.getUserId(), rewardsService.getAttractionList().get(1), new Date()));
         rewardsService.calculateRewards(user);

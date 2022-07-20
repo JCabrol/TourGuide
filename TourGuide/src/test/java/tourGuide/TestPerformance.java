@@ -26,8 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
 @Slf4j
-@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 @RunWith(SpringRunner.class)
+//@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 @SpringBootTest
 public class TestPerformance {
 
@@ -83,7 +83,6 @@ public class TestPerformance {
         assertEquals(allUsers.size(), allVisitedLocations.size());
         assertTrue(TimeUnit.MINUTES.toSeconds(15) >= TimeUnit.MILLISECONDS.toSeconds(stopWatch.getTime()));
     }
-
 
     @Test
     public void highVolumeGetRewards() throws Exception {

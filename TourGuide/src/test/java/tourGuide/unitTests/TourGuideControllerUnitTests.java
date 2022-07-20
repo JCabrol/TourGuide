@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Tag("controllerTests")
 @Tag("tourGuideTests")
-@ActiveProfiles("unitTest")
+@ActiveProfiles({"unitTest","test"})
 public class TourGuideControllerUnitTests {
 
     @MockBean
