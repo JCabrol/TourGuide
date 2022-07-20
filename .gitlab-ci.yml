@@ -30,4 +30,4 @@ test:
     when: always
     reports:
       junit: ${buildDir}/report
-      jacoco: ${buildDir}/jacocoHtml
+      jacocoTestReport: ${buildDir}/jacocoHtml
