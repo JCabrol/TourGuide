@@ -28,7 +28,9 @@ test:
   stage: test
   script: gradle test
   artifacts:
+    when: always
     paths:
-      - index.html
-    
+      - rspec.xml
+    reports:
+      junit: rspec.xml 
      
