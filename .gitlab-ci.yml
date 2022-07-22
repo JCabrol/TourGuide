@@ -22,13 +22,17 @@ before_script:
 assemble:
   stage: build
   script: gradle assemble
-
-bootJar:
-  stage: build
-  script: gradle --build-cache bootJar
   artifacts:
     paths:
       - $CI_PROJECT_DIR/TourGuide/build/libs/tourGuide-1.0.0.jar
+
+jacocoReport:
+  stage: test
+  script: gradle jacocoTestReport
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/TourGuide/build/reports/jacoco/test
+      - $CI_PROJECT_DIR/TourGuide/build/jacocoHtml
 
 test:
   stage: test
@@ -36,15 +40,8 @@ test:
   artifacts:
     when: always
     reports:
-      junit: $CI_PROJECT_DIR/TourGuide/build/reports/tests/test
+      junit: $CI_PROJECT_DIR/TourGuide/build/reports/tests/test/**/*
      
-testReport:
-  stage: test
-  script: gradle jacocoTestReport
-  artifacts:
-    paths:
-      - $CI_PROJECT_DIR/TourGuide/build/reports/jacoco/test
-      - $CI_PROJECT_DIR/TourGuide/build/jacocoHtml
 
 javadoc:
   stage: documentation
