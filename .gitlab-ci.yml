@@ -36,19 +36,19 @@ test:
   artifacts:
     when: always
     reports:
-      junit: $CI_PROJECT_DIR/TourGuide/build/reports/tests/test/**/*.html
+      junit: $CI_PROJECT_DIR/TourGuide/build/reports/tests/test
      
 testReport:
   stage: test
   script: gradle jacocoTestReport
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/TourGuide/build/reports/jacoco/test/jacocoTestReport.xml
-      - $CI_PROJECT_DIR/TourGuide/build/jacocoHtml/**/*.html
+      - $CI_PROJECT_DIR/TourGuide/build/reports/jacoco/test
+      - $CI_PROJECT_DIR/TourGuide/build/jacocoHtml
 
 javadoc:
   stage: documentation
   script: gradle javadoc
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/TourGuide/build/docs/javadoc/tourGuide/*
+      - $CI_PROJECT_DIR/TourGuide/build/docs/javadoc
