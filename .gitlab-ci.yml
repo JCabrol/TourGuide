@@ -36,7 +36,7 @@ test:
   artifacts:
     when: always
     reports:
-      junit: $CI_PROJECT_DIR/TourGuide/build/reports/tests/*
+      junit: $CI_PROJECT_DIR/TourGuide/build/reports/tests/test/*
      
 testReport:
   stage: test
