@@ -28,7 +28,7 @@ bootJar:
   script: gradle --build-cache bootJar
   artifacts:
     paths:
-      - tourGuide-1.0.0.jar
+      - $CI_PROJECT_DIR/tourGuide-1.0.0.jar
 
 test:
   stage: test
@@ -36,18 +36,18 @@ test:
   artifacts:
     when: always
     reports:
-      junit: build/test-results/test/**/TEST-*.xml
+      junit: $CI_PROJECT_DIR/build/test-results/test/**/TEST-*.xml
      
 testReport:
   stage: test
   script: gradle jacocoTestReport
   artifacts:
     paths:
-      - build/jacocoHtml/index.html
+      - $CI_PROJECT_DIR/build/jacocoHtml/index.html
 
 javadoc:
   stage: documentation
   script: gradle javadoc
   artifacts:
     paths:
-      - build/docs/javadoc/tourGuide/*
+      - $CI_PROJECT_DIR/build/docs/javadoc/tourGuide/*
