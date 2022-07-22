@@ -38,9 +38,8 @@ test:
   stage: test
   script: gradle test
   artifacts:
-    when: always
-    reports:
-      junit: $CI_PROJECT_DIR/TourGuide/build/reports/tests/test/**/*
+    paths:
+      - $CI_PROJECT_DIR/TourGuide/build/reports/tests/test
      
 
 javadoc:
