@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CalculateLocationTask.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TourGuide</a> &gt; <a href="index.source.html" class="el_package">tourGuide.recursiveTask</a> &gt; <span class="el_source">CalculateLocationTask.java</span></div><h1>CalculateLocationTask.java</h1><pre class="source lang-java linenums">package tourGuide.recursiveTask;
+
+import gpsUtil.location.VisitedLocation;
+import tourGuide.model.User;
+import tourGuide.service.GpsUtilService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.RecursiveTask;
+
+public class CalculateLocationTask extends RecursiveTask&lt;List&lt;VisitedLocation&gt;&gt; {
+
+    private final List&lt;User&gt; userList;
+    private final GpsUtilService gpsUtilService;
+
+<span class="fc" id="L16">    public CalculateLocationTask(List&lt;User&gt; userList, GpsUtilService gpsUtilService) {</span>
+<span class="fc" id="L17">        this.userList = userList;</span>
+<span class="fc" id="L18">        this.gpsUtilService = gpsUtilService;</span>
+<span class="fc" id="L19">    }</span>
+
+    /**
+     * Calculate recursively the userLocation for all users in the userList, by calling gpsUtilService, and put it in a visitedLocationList
+     *
+     * @return a list of visitedLocations containing the actual location and the id of each user present in the given list as well as the date of being at this location
+     */
+    @Override
+    protected List&lt;VisitedLocation&gt; compute() {
+<span class="fc" id="L28">        List&lt;VisitedLocation&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (userList.size() == 1) {</span>
+<span class="fc" id="L30">            User user = userList.get(0);</span>
+<span class="fc" id="L31">            VisitedLocation visitedLocation = gpsUtilService.getUserLocation(user.getUserId());</span>
+<span class="fc" id="L32">            result.add(visitedLocation);</span>
+
+<span class="fc" id="L34">        } else {</span>
+
+<span class="fc" id="L36">            int midPoint = userList.size() / 2;</span>
+<span class="fc" id="L37">            CalculateLocationTask left =</span>
+                    new CalculateLocationTask(
+<span class="fc" id="L39">                            userList.subList(0, midPoint), gpsUtilService);</span>
+
+<span class="fc" id="L41">            CalculateLocationTask right =</span>
+                    new CalculateLocationTask(
+<span class="fc" id="L43">                            userList.subList(midPoint, userList.size()), gpsUtilService);</span>
+
+<span class="fc" id="L45">            left.fork();</span>
+<span class="fc" id="L46">            List&lt;VisitedLocation&gt; rightResult = right.compute();</span>
+<span class="fc" id="L47">            List&lt;VisitedLocation&gt; leftResult = left.join();</span>
+<span class="fc" id="L48">            result.addAll(rightResult);</span>
+<span class="fc" id="L49">            result.addAll(leftResult);</span>
+        }
+<span class="fc" id="L51">        return result;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

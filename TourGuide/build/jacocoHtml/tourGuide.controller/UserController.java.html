@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TourGuide</a> &gt; <a href="index.source.html" class="el_package">tourGuide.controller</a> &gt; <span class="el_source">UserController.java</span></div><h1>UserController.java</h1><pre class="source lang-java linenums">package tourGuide.controller;
+
+import com.jsoniter.output.JsonStream;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import tourGuide.model.DTO.UserDTO;
+import tourGuide.model.DTO.UserPreferencesDTO;
+import tourGuide.service.UserService;
+
+@RestController
+<span class="fc" id="L11">public class UserController {</span>
+
+    @Autowired
+    UserService userService;
+
+    /**
+     * Read - Get the personal information of a registered user, displaying its userName, its phoneNumber and its emailAddress
+     *
+     * @param userName the name of the user whose personal information are sought
+     * @return JSon file containing user's information or an error message if the user is not found
+     */
+    @GetMapping(&quot;/getUser&quot;)
+    public String getUser(@RequestParam String userName) {
+<span class="fc" id="L24">        UserDTO user = userService.getUserDTO(userName);</span>
+<span class="fc" id="L25">        return JsonStream.serialize(user);</span>
+    }
+
+    /**
+     * Create - Add a new user from the information given in parameter
+     *
+     * @param userName the name of the user to create
+     * @param phoneNumber not required - the phone number of the user to create
+     * @param emailAddress not required - the email address of the user to create
+     * @return a success message to indicate the user have been created or an error message if it couldn't have been done
+     */
+    @PostMapping(&quot;/createUser&quot;)
+    public String createUser(@RequestParam String userName, @RequestParam(required = false) String phoneNumber, @RequestParam(required = false) String emailAddress) {
+<span class="fc" id="L38">        UserDTO userDTO = new UserDTO(userName, phoneNumber, emailAddress);</span>
+<span class="fc" id="L39">        userService.addNewUser(userDTO);</span>
+<span class="fc" id="L40">        return &quot;The user with name &quot; + userName + &quot; has been added.&quot;;</span>
+    }
+
+    /**
+     * Update - Update a user from the information given in parameter
+     *
+     * @param userName the name of the user to update
+     * @param phoneNumber not required - the new phone number to update
+     * @param emailAddress not required - the new email address to update
+     * @return a success message to indicate the user have been updated or an error message if it couldn't have been done
+     */
+    @PutMapping(&quot;/updateUser&quot;)
+    public String updateUser(@RequestParam String userName, @RequestParam(required = false) String phoneNumber, @RequestParam(required = false) String emailAddress) {
+<span class="fc" id="L53">        UserDTO userDTO = new UserDTO(userName, phoneNumber, emailAddress);</span>
+<span class="fc" id="L54">        userService.updateUser(userDTO);</span>
+<span class="fc" id="L55">        return &quot;The user with name &quot; + userName + &quot; has been updated.&quot;;</span>
+    }
+
+    /**
+     * Delete - Delete a user
+     *
+     * @param userName the name of the user to delete
+     * @return a success message to indicate the user have been deleted or an error message if it couldn't have been done
+     */
+    @DeleteMapping(&quot;/deleteUser&quot;)
+    public String deleteUser(@RequestParam String userName) {
+<span class="fc" id="L66">        userService.deleteUser(userName);</span>
+<span class="fc" id="L67">        return &quot;The user with name &quot; + userName + &quot; has been deleted.&quot;;</span>
+    }
+
+    /**
+     * Read - Get the user preferences of a registered user.
+     * The userPreferences object contains the currency the user wants to use, the minimal and the maximal price he wants to pay,
+     * the trip duration (in number of days), the number of adults and children and the number of tickets
+     *
+     * @param userName the name of the user whose preferences are sought
+     * @return JSon file containing user preferences' information or an error message if the user is not found
+     */
+    @GetMapping(&quot;/getUserPreferences&quot;)
+    public String getUserPreferences(@RequestParam String userName) {
+<span class="fc" id="L80">        return JsonStream.serialize(userService.getUserPreferences(userName));</span>
+    }
+
+    /**
+     * Update - Update user preferences from the information given in parameter
+     *
+     * @param userName the name of the user whose preferences are to be updated
+     * @param attractionProximity not required - the new preferred distance between user and attraction
+     * @param currency not required - the new currency the user wants to use to pay trips
+     * @param lowerPricePoint not required - the new minimal price the user wants for its trips
+     * @param highPricePoint not required - the new maximal price the user wants for its trips
+     * @param tripDuration not required - the new duration (in number of days) the user wants for its trips
+     * @param numberOfAdults not required - the new number of adults the user wants for its trips
+     * @param numberOfChildren not required - the new number of children the user wants for its trips
+     * @param ticketQuantity not required - the new quantity of tickets the user wants for the attractions
+     * @return a success message to indicate the user have been updated or an error message if it couldn't have been done
+     */
+    @PutMapping(&quot;/updateUserPreferences&quot;)
+    public String updateUserPreferences(@RequestParam String userName,
+                                        @RequestParam(required = false) Integer attractionProximity,
+                                        @RequestParam(required = false) String currency,
+                                        @RequestParam(required = false) Integer lowerPricePoint,
+                                        @RequestParam(required = false) Integer highPricePoint,
+                                        @RequestParam(required = false) Integer tripDuration,
+                                        @RequestParam(required = false) Integer ticketQuantity,
+                                        @RequestParam(required = false) Integer numberOfAdults,
+                                        @RequestParam(required = false) Integer numberOfChildren) {
+<span class="fc" id="L107">        UserPreferencesDTO userPreferencesDTO = new UserPreferencesDTO(attractionProximity, currency, lowerPricePoint, highPricePoint, tripDuration, ticketQuantity, numberOfAdults, numberOfChildren);</span>
+<span class="fc" id="L108">        userService.updateUserPreferences(userName, userPreferencesDTO);</span>
+<span class="fc" id="L109">        return &quot;The preferences for user &quot; + userName + &quot; have been updated.&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

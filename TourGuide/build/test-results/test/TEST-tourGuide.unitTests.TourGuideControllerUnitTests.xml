@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="tourGuide.unitTests.TourGuideControllerUnitTests" tests="15" skipped="0" failures="0" errors="0" timestamp="2022-07-20T13:59:14" hostname="LAPTOP-FJNEE5I2" time="0.986">
+  <properties/>
+  <testcase name="getLocationExistingUserTest" classname="tourGuide.unitTests.TourGuideControllerUnitTests" time="0.049"/>
+  <testcase name="getLocationMissingParameterTest" classname="tourGuide.unitTests.TourGuideControllerUnitTests" time="0.023"/>
+  <testcase name="getNearbyAttractionsNoParameterTest" classname="tourGuide.unitTests.TourGuideControllerUnitTests" time="0.008"/>
+  <testcase name="getRewardsUserNoParameterTest" classname="tourGuide.unitTests.TourGuideControllerUnitTests" time="0.153"/>
+  <testcase name="getAllCurrentLocationsTest" classname="tourGuide.unitTests.TourGuideControllerUnitTests" time="0.008"/>
+  <testcase name="indexTest" classname="tourGuide.unitTests.TourGuideControllerUnitTests" time="0.021"/>
+  <testcase name="getNearbyAttractionsTest" classname="tourGuide.unitTests.TourGuideControllerUnitTests" time="0.161"/>
+  <testcase name="getTripDealsUserNonExistingTest" classname="tourGuide.unitTests.TourGuideControllerUnitTests" time="0.014"/>
+  <testcase name="errorPageTest" classname="tourGuide.unitTests.TourGuideControllerUnitTests" time="0.02"/>
+  <testcase name="getNearbyAttractionsUserNonExistingTest" classname="tourGuide.unitTests.TourGuideControllerUnitTests" time="0.138"/>
+  <testcase name="getTripDealsNoParameterTest" classname="tourGuide.unitTests.TourGuideControllerUnitTests" time="0.023"/>
+  <testcase name="getRewardsTest" classname="tourGuide.unitTests.TourGuideControllerUnitTests" time="0.151"/>
+  <testcase name="getLocationNonExistingUserTest" classname="tourGuide.unitTests.TourGuideControllerUnitTests" time="0.012"/>
+  <testcase name="getRewardsUserNonExistingTest" classname="tourGuide.unitTests.TourGuideControllerUnitTests" time="0.164"/>
+  <testcase name="getTripDealsTest" classname="tourGuide.unitTests.TourGuideControllerUnitTests" time="0.012"/>
+  <system-out><![CDATA[2022-07-20 15:58:57.316  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Neither @ContextConfiguration nor @ContextHierarchy found for test class [tourGuide.unitTests.TourGuideControllerUnitTests], using SpringBootContextLoader
+2022-07-20 15:58:57.317  INFO 79672 --- [    Test worker] o.s.t.c.support.AbstractContextLoader    : Could not detect default resource locations for test class [tourGuide.unitTests.TourGuideControllerUnitTests]: no resource found for suffixes {-context.xml, Context.groovy}.
+2022-07-20 15:58:57.317  INFO 79672 --- [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [tourGuide.unitTests.TourGuideControllerUnitTests]: TourGuideControllerUnitTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2022-07-20 15:58:57.324  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration tourGuide.Application for test class tourGuide.unitTests.TourGuideControllerUnitTests
+2022-07-20 15:58:57.327  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Loaded default TestExecutionListener class names from location [META-INF/spring.factories]: [org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener, org.springframework.test.context.web.ServletTestExecutionListener, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener, org.springframework.test.context.support.DependencyInjectionTestExecutionListener, org.springframework.test.context.support.DirtiesContextTestExecutionListener, org.springframework.test.context.transaction.TransactionalTestExecutionListener, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener]
+2022-07-20 15:58:57.329  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Using TestExecutionListeners: [org.springframework.test.context.web.ServletTestExecutionListener@4b94078e, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener@77813493, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener@32ce08b4, org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener@4d8d51df, org.springframework.test.context.support.DirtiesContextTestExecutionListener@264e8797, org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener@58950a61, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener@1a5c326f, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener@3d788b52, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener@6f58d155, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener@1fee08dd]
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.1.6.RELEASE)
+
+2022-07-20 15:58:57.770  INFO 79672 --- [    Test worker] t.u.TourGuideControllerUnitTests         : Starting TourGuideControllerUnitTests on LAPTOP-FJNEE5I2 with PID 79672 (started by CABROL in C:\Users\CABROL\Documents\Justine\OpenClassrooms\projectTourguide\TourGuide)
+2022-07-20 15:58:57.770  INFO 79672 --- [    Test worker] t.u.TourGuideControllerUnitTests         : The following profiles are active: unitTest,test
+2022-07-20 15:59:05.596  INFO 79672 --- [    Test worker] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2022-07-20 15:59:14.078  INFO 79672 --- [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2022-07-20 15:59:14.081  INFO 79672 --- [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2022-07-20 15:59:14.104  INFO 79672 --- [    Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoint(s) beneath base path '/actuator'
+2022-07-20 15:59:14.337  INFO 79672 --- [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 255 ms
+2022-07-20 15:59:14.640  INFO 79672 --- [    Test worker] t.u.TourGuideControllerUnitTests         : Started TourGuideControllerUnitTests in 17.308 seconds (JVM running for 880.167)
+2022-07-20 15:59:14.722 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : The request is not correct : a request parameter is missing or wrong.
+
+2022-07-20 15:59:14.732 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : The request is not correct : a request parameter is missing or wrong.
+
+2022-07-20 15:59:14.740 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : The request is not correct : a request parameter is missing or wrong.
+
+2022-07-20 15:59:15.097 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : error message
+2022-07-20 15:59:15.105  WARN 79672 --- [    Test worker] o.s.web.servlet.PageNotFound             : No mapping for GET /nonExistingUri
+2022-07-20 15:59:15.107 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : The researched page was not found : No handler found for GET /nonExistingUri
+2022-07-20 15:59:15.130 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : error message
+2022-07-20 15:59:15.269 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : The request is not correct : a request parameter is missing or wrong.
+
+2022-07-20 15:59:15.456 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : error message
+2022-07-20 15:59:15.620 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : error message
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

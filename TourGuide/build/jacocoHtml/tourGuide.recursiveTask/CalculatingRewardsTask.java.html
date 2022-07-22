@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CalculatingRewardsTask.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TourGuide</a> &gt; <a href="index.source.html" class="el_package">tourGuide.recursiveTask</a> &gt; <span class="el_source">CalculatingRewardsTask.java</span></div><h1>CalculatingRewardsTask.java</h1><pre class="source lang-java linenums">package tourGuide.recursiveTask;
+
+import gpsUtil.location.Attraction;
+import gpsUtil.location.VisitedLocation;
+import tourGuide.model.DTO.RewardElements;
+import tourGuide.model.User;
+import tourGuide.service.RewardsService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.RecursiveTask;
+
+public class CalculatingRewardsTask extends RecursiveTask&lt;List&lt;RewardElements&gt;&gt; {
+
+
+    private final User user;
+    private final List&lt;Attraction&gt; attractionList;
+    private final RewardsService rewardsService;
+
+
+<span class="fc" id="L21">    public CalculatingRewardsTask(User user, List&lt;Attraction&gt; attractionList, RewardsService rewardsService) {</span>
+<span class="fc" id="L22">        this.user = user;</span>
+<span class="fc" id="L23">        this.attractionList = attractionList;</span>
+<span class="fc" id="L24">        this.rewardsService = rewardsService;</span>
+<span class="fc" id="L25">    }</span>
+
+    /**
+     * Calculate recursively the rewardElements for which there are rewards to add
+     * A rewardElement contains a visitedLocation and an attraction
+     * RewardsElements are selected if the visitedLocation is close to an attraction and if the attraction is not already is the userRewards list
+     *
+     * @return a list of visitedLocations containing the actual location and the id of each user present in the given list as well as the date of being at this location
+     */
+    @Override
+    protected List&lt;RewardElements&gt; compute() {
+<span class="fc" id="L36">        List&lt;RewardElements&gt; rewardElementsList = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        if (attractionList.size() == 1) {</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">            for (VisitedLocation visitedLocation : user.getVisitedLocations()) {</span>
+
+<span class="fc bfc" id="L41" title="All 2 branches covered.">                if (rewardsService.nearAttraction(visitedLocation, attractionList.get(0))) {</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">                    if (rewardsService.isNotInRewardsList(attractionList.get(0).attractionName, user)) {</span>
+<span class="fc" id="L43">                        Attraction attraction = attractionList.get(0);</span>
+<span class="fc" id="L44">                        rewardElementsList.add(new RewardElements(visitedLocation, attraction));</span>
+                    }
+                }
+<span class="fc" id="L47">            }</span>
+        } else {
+
+<span class="fc" id="L50">            int midPoint = attractionList.size() / 2;</span>
+<span class="fc" id="L51">            CalculatingRewardsTask left =</span>
+                    new CalculatingRewardsTask(
+<span class="fc" id="L53">                            user, attractionList.subList(0, midPoint), rewardsService);</span>
+
+<span class="fc" id="L55">            CalculatingRewardsTask right =</span>
+                    new CalculatingRewardsTask(
+<span class="fc" id="L57">                            user, attractionList.subList(midPoint, attractionList.size()), rewardsService);</span>
+<span class="fc" id="L58">            left.fork();</span>
+<span class="fc" id="L59">            List&lt;RewardElements&gt; rightResult = right.compute();</span>
+<span class="fc" id="L60">            List&lt;RewardElements&gt; leftResult = left.join();</span>
+<span class="fc" id="L61">            rewardElementsList.addAll(rightResult);</span>
+<span class="fc" id="L62">            rewardElementsList.addAll(leftResult);</span>
+        }
+<span class="fc" id="L64">        return rewardElementsList;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

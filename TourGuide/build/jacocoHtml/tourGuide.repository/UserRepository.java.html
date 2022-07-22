@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserRepository.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TourGuide</a> &gt; <a href="index.source.html" class="el_package">tourGuide.repository</a> &gt; <span class="el_source">UserRepository.java</span></div><h1>UserRepository.java</h1><pre class="source lang-java linenums">package tourGuide.repository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import tourGuide.dataSource.InternalUserMap;
+import tourGuide.exception.ObjectAlreadyExistingException;
+import tourGuide.exception.ObjectNotFoundException;
+import tourGuide.model.User;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@Repository
+<span class="fc" id="L17">public class UserRepository {</span>
+
+    @Autowired
+    private InternalUserMap internalUserMap;
+
+    /**
+     * Get all user registered in internalUserMap
+     *
+     * @return a list of all user registered
+     */
+    public List&lt;User&gt; getUserList() {
+<span class="fc" id="L28">        return internalUserMap.getInternalUserMap().values().parallelStream().collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Get a user from its userName
+     *
+     * @param username the name of the researched user
+     * @return the researched user
+     * @throws ObjectNotFoundException if the userName is not found in internalUserMap
+     */
+    public User getUserByName(String username) throws ObjectNotFoundException {
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        if (internalUserMap.getInternalUserMap().containsKey(username)) {</span>
+<span class="fc" id="L40">            return internalUserMap.getInternalUserMap().get(username);</span>
+        } else {
+<span class="fc" id="L42">            throw new ObjectNotFoundException(&quot;The user whose name is &quot; + username + &quot; was not found.&quot;);</span>
+        }
+    }
+
+    /**
+     * Get a user from its id
+     *
+     * @param userId the id of the researched user
+     * @return the researched user
+     * @throws ObjectNotFoundException if the userId is not found in internalUserMap
+     */
+    public User getUserById(UUID userId) throws ObjectNotFoundException {
+<span class="fc" id="L54">        Supplier&lt;Stream&lt;User&gt;&gt; streamSupplier</span>
+<span class="fc" id="L55">                = () -&gt; getUserList().stream().parallel()</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">                .filter(user -&gt; user.getUserId() == userId);</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">        if (streamSupplier.get().findAny().isPresent()) {</span>
+<span class="fc" id="L58">            return streamSupplier.get().collect(Collectors.toList()).get(0);</span>
+        } else {
+<span class="nc" id="L60">            throw new ObjectNotFoundException(&quot;The user whose id is &quot; + userId + &quot; was not found.&quot;);</span>
+        }
+    }
+
+    /**
+     * Add a user in the internalUserMap
+     *
+     * @param user the user to add
+     * @throws ObjectAlreadyExistingException if the userName is already registered in internalUserMap
+     */
+    public void addUser(User user) throws ObjectAlreadyExistingException {
+
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if (!internalUserMap.getInternalUserMap().containsKey(user.getUserName())) {</span>
+<span class="fc" id="L73">            internalUserMap.getInternalUserMap().put(user.getUserName(), user);</span>
+        } else {
+<span class="fc" id="L75">            throw new ObjectAlreadyExistingException(&quot;The user whose name is &quot; + user.getUserName() + &quot; was already existing, so it couldn't have been added.&quot;);</span>
+        }
+<span class="fc" id="L77">    }</span>
+
+    /**
+     * Update a user
+     *
+     * @param user the user to update
+     * @throws ObjectNotFoundException if the userName is not found in internalUserMap
+     */
+    public void updateUser(User user) throws ObjectNotFoundException {
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">        if (internalUserMap.getInternalUserMap().containsKey(user.getUserName())) {</span>
+<span class="fc" id="L87">            internalUserMap.getInternalUserMap().put(user.getUserName(), user);</span>
+        } else {
+<span class="nc" id="L89">            throw new ObjectNotFoundException(&quot;The user whose name is &quot; + user.getUserName() + &quot; was not found, so it couldn't have been updated.&quot;);</span>
+        }
+<span class="fc" id="L91">    }</span>
+
+    /**
+     * Delete a user
+     *
+     * @param user the user to delete
+     * @throws ObjectNotFoundException if the userName is not found in internalUserMap
+     */
+    public void deleteUser(User user) throws ObjectNotFoundException {
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">        if (internalUserMap.getInternalUserMap().containsKey(user.getUserName())) {</span>
+<span class="fc" id="L101">            internalUserMap.getInternalUserMap().remove(user.getUserName());</span>
+        } else {
+<span class="nc" id="L103">            throw new ObjectNotFoundException(&quot;The user whose name is &quot; + user.getUserName() + &quot; was not found, so it couldn't have been deleted.&quot;);</span>
+        }
+<span class="fc" id="L105">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

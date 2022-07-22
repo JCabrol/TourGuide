@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TourGuide</a> &gt; <a href="index.source.html" class="el_package">tourGuide.service</a> &gt; <span class="el_source">UserServiceImpl.java</span></div><h1>UserServiceImpl.java</h1><pre class="source lang-java linenums">package tourGuide.service;
+
+import gpsUtil.location.VisitedLocation;
+import lombok.extern.slf4j.Slf4j;
+import org.javamoney.moneta.Money;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import tourGuide.exception.ObjectAlreadyExistingException;
+import tourGuide.exception.ObjectNotFoundException;
+import tourGuide.model.DTO.UserDTO;
+import tourGuide.model.DTO.UserPreferencesDTO;
+import tourGuide.model.User;
+import tourGuide.model.UserPreferences;
+import tourGuide.model.UserReward;
+import tourGuide.repository.UserRepository;
+
+import javax.money.Monetary;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+<span class="fc" id="L22">@Slf4j</span>
+@Service
+<span class="fc" id="L24">public class UserServiceImpl implements UserService {</span>
+
+    @Autowired
+    private UserRepository userRepository;
+
+    /**
+     * Returns the list of all the registered users, and an empty list if there is no user registered
+     *
+     * @return a list of User containing all the registered users
+     */
+    @Override
+    public List&lt;User&gt; getAllUsers() {
+<span class="fc" id="L36">        return userRepository.getUserList();</span>
+    }
+
+    /**
+     * Get a User from its name
+     *
+     * @param userName the name of the researched user
+     * @return the researched User
+     * @throws ObjectNotFoundException when the user is not found
+     */
+    @Override
+    public User getUser(String userName) throws ObjectNotFoundException {
+<span class="fc" id="L48">        return userRepository.getUserByName(userName);</span>
+    }
+
+    /**
+     * Get a User from its id
+     *
+     * @param userId the id of the researched user
+     * @return the researched User
+     * @throws ObjectNotFoundException when the user is not found
+     */
+    @Override
+    public User getUserById(UUID userId) throws ObjectNotFoundException {
+<span class="fc" id="L60">        return userRepository.getUserById(userId);</span>
+    }
+
+    /**
+     * Get a UserDTO from its name
+     *
+     * @param userName the name of the researched user
+     * @return a UserDTO object containing personal information about the researched user (userName, phoneNumber and emailAddress)
+     * @throws ObjectNotFoundException when the user is not found
+     */
+    @Override
+    public UserDTO getUserDTO(String userName) throws ObjectNotFoundException {
+<span class="fc" id="L72">        User user = userRepository.getUserByName(userName);</span>
+<span class="fc" id="L73">        return new UserDTO(user.getUserName(), user.getPhoneNumber(), user.getEmailAddress());</span>
+    }
+
+    /**
+     * Create a new user and add it to registered data
+     *
+     * @param userDTO a UserDTO object containing information to create a new user (userName, phoneNumber and emailAddress)
+     * @throws ObjectAlreadyExistingException when the userName is already registered
+     */
+    @Override
+    public void addNewUser(UserDTO userDTO) throws ObjectAlreadyExistingException {
+<span class="fc" id="L84">        User user = new User(UUID.randomUUID(), userDTO.getUserName(), userDTO.getPhoneNumber(), userDTO.getEmailAddress());</span>
+<span class="fc" id="L85">        userRepository.addUser(user);</span>
+<span class="fc" id="L86">        String message = &quot;The user with name &quot; + userDTO.getUserName() + &quot; have been created.&quot;;</span>
+<span class="fc" id="L87">        log.debug(message);</span>
+<span class="fc" id="L88">    }</span>
+
+    /**
+     * Update user personal information
+     *
+     * @param userDTO a UserDTO object containing information to update a user (userName, phoneNumber and emailAddress)
+     * @throws ObjectNotFoundException when the user is not found
+     */
+    @Override
+    public void updateUser(UserDTO userDTO) throws ObjectNotFoundException {
+<span class="fc" id="L98">        User user = getUser(userDTO.getUserName());</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        if (userDTO.getEmailAddress() != null) {</span>
+<span class="fc" id="L100">            user.setEmailAddress(userDTO.getEmailAddress());</span>
+        }
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        if (userDTO.getPhoneNumber() != null) {</span>
+<span class="fc" id="L103">            user.setPhoneNumber(userDTO.getPhoneNumber());</span>
+        }
+<span class="fc" id="L105">        userRepository.updateUser(user);</span>
+<span class="fc" id="L106">        String message = &quot;The user with name &quot; + userDTO.getUserName() + &quot; have been updated.&quot;;</span>
+<span class="fc" id="L107">        log.debug(message);</span>
+<span class="fc" id="L108">    }</span>
+
+    /**
+     * Delete an user
+     *
+     * @param userName the name of the user to delete
+     * @throws ObjectNotFoundException when the user is not found
+     */
+    @Override
+    public void deleteUser(String userName) throws ObjectNotFoundException {
+<span class="fc" id="L118">        User user = getUser(userName);</span>
+<span class="fc" id="L119">        userRepository.deleteUser(user);</span>
+<span class="fc" id="L120">        String message = &quot;The user with name &quot; + userName + &quot; have been deleted.&quot;;</span>
+<span class="fc" id="L121">        log.debug(message);</span>
+<span class="fc" id="L122">    }</span>
+
+    /**
+     * Get the user's preferences
+     *
+     * @param userName the name of the user to delete
+     * @return a UserPreferenceDTO object containing all information about the user's preferences
+     * @throws ObjectNotFoundException when the user is not found
+     */
+    @Override
+    public UserPreferencesDTO getUserPreferences(String userName) throws ObjectNotFoundException {
+<span class="fc" id="L133">        User user = userRepository.getUserByName(userName);</span>
+<span class="fc" id="L134">        UserPreferences userPreferences = user.getUserPreferences();</span>
+<span class="fc" id="L135">        return new UserPreferencesDTO(userPreferences.getAttractionProximity(),</span>
+<span class="fc" id="L136">                userPreferences.getCurrency().toString(),</span>
+<span class="fc" id="L137">                userPreferences.getLowerPricePoint().getNumber().intValueExact(),</span>
+<span class="fc" id="L138">                userPreferences.getHighPricePoint().getNumber().intValueExact(),</span>
+<span class="fc" id="L139">                userPreferences.getTripDuration(),</span>
+<span class="fc" id="L140">                userPreferences.getTicketQuantity(),</span>
+<span class="fc" id="L141">                userPreferences.getNumberOfAdults(),</span>
+<span class="fc" id="L142">                userPreferences.getNumberOfChildren());</span>
+    }
+
+    /**
+     * Update the user's preferences
+     *
+     * @param userName           the name of the user whose preferences have to be updated
+     * @param userPreferencesDTO a UserPreferencesDTO object containing information to update about user's preferences
+     * @throws ObjectNotFoundException when the user is not found
+     */
+    @Override
+    public void updateUserPreferences(String userName, UserPreferencesDTO userPreferencesDTO) throws ObjectNotFoundException {
+<span class="fc" id="L154">        User user = userRepository.getUserByName(userName);</span>
+<span class="fc" id="L155">        UserPreferences userPreferences = user.getUserPreferences();</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">        if (userPreferencesDTO.getAttractionProximity() != null) {</span>
+<span class="fc" id="L157">            userPreferences.setAttractionProximity((userPreferencesDTO.getAttractionProximity()));</span>
+        }
+<span class="fc bfc" id="L159" title="All 2 branches covered.">        if (userPreferencesDTO.getCurrency() != null) {</span>
+<span class="fc" id="L160">            userPreferences.setCurrency(Monetary.getCurrency(userPreferencesDTO.getCurrency()));</span>
+        }
+<span class="fc bfc" id="L162" title="All 2 branches covered.">        if (userPreferencesDTO.getHighPricePoint() != null) {</span>
+<span class="fc" id="L163">            userPreferences.setHighPricePoint(Money.of(userPreferencesDTO.getHighPricePoint(), userPreferences.getCurrency()));</span>
+        }
+<span class="fc bfc" id="L165" title="All 2 branches covered.">        if (userPreferencesDTO.getLowerPricePoint() != null) {</span>
+<span class="fc" id="L166">            userPreferences.setLowerPricePoint(Money.of(userPreferencesDTO.getLowerPricePoint(), userPreferences.getCurrency()));</span>
+        }
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        if (userPreferencesDTO.getAttractionProximity() != null) {</span>
+<span class="fc" id="L169">            userPreferences.setAttractionProximity(userPreferencesDTO.getAttractionProximity());</span>
+        }
+<span class="fc bfc" id="L171" title="All 2 branches covered.">        if (userPreferencesDTO.getNumberOfAdults() != null) {</span>
+<span class="fc" id="L172">            userPreferences.setNumberOfAdults(userPreferencesDTO.getNumberOfAdults());</span>
+        }
+<span class="fc bfc" id="L174" title="All 2 branches covered.">        if (userPreferencesDTO.getNumberOfChildren() != null) {</span>
+<span class="fc" id="L175">            userPreferences.setNumberOfChildren(userPreferencesDTO.getNumberOfChildren());</span>
+        }
+<span class="fc bfc" id="L177" title="All 2 branches covered.">        if (userPreferencesDTO.getTicketQuantity() != null) {</span>
+<span class="fc" id="L178">            userPreferences.setTicketQuantity(userPreferencesDTO.getTicketQuantity());</span>
+        }
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        if (userPreferencesDTO.getTripDuration() != null) {</span>
+<span class="fc" id="L181">            userPreferences.setTripDuration(userPreferencesDTO.getTripDuration());</span>
+        }
+<span class="fc" id="L183">        user.setUserPreferences(userPreferences);</span>
+<span class="fc" id="L184">        userRepository.updateUser(user);</span>
+<span class="fc" id="L185">        String message = &quot;The preferences for user &quot; + userName + &quot; have been updated.&quot;;</span>
+<span class="fc" id="L186">        log.debug(message);</span>
+<span class="fc" id="L187">    }</span>
+
+    /**
+     * Get the list of rewards for the given user
+     *
+     * @param user the user whose rewards are researched
+     * @return the list of userRewards for the user, an empty list if there are not any userRewards
+     */
+    @Override
+    public List&lt;UserReward&gt; getUserRewards(User user) {
+<span class="fc" id="L197">        return user.getUserRewards();</span>
+    }
+
+    /**
+     * Add rewards to a user
+     *
+     * @param user       the user whose rewards have to be added
+     * @param userReward the rewards to add
+     */
+    @Override
+    public void addUserRewards(User user, UserReward userReward) {
+<span class="fc" id="L208">        List&lt;UserReward&gt; userRewardList = user.getUserRewards();</span>
+<span class="fc" id="L209">        userRewardList.add(userReward);</span>
+<span class="fc" id="L210">        user.setUserRewards(userRewardList);</span>
+<span class="fc" id="L211">        userRepository.updateUser(user);</span>
+<span class="fc" id="L212">        String message = &quot;New rewards have been added for user &quot; + user.getUserName() + &quot;.&quot;;</span>
+<span class="fc" id="L213">        log.debug(message);</span>
+<span class="fc" id="L214">    }</span>
+
+    /**
+     * Get the user's last visited location
+     *
+     * @param user the user whose last visited location is researched
+     * @return a VisitedLocation object (returns null if the user doesn't have any visited location)
+     */
+    @Override
+    public VisitedLocation getUserLastVisitedLocation(User user) {
+<span class="fc" id="L224">        VisitedLocation lastVisitedLocation = null;</span>
+<span class="fc" id="L225">        List&lt;VisitedLocation&gt; userVisitedLocationList = user.getVisitedLocations();</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">        if (userVisitedLocationList.size() != 0) {</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">            if (userVisitedLocationList.stream().parallel().anyMatch(visitedLocation -&gt; visitedLocation.timeVisited.equals(user.getLatestLocationTimestamp()))) {</span>
+<span class="fc" id="L228">                lastVisitedLocation = userVisitedLocationList</span>
+<span class="fc" id="L229">                        .stream()</span>
+<span class="fc" id="L230">                        .parallel()</span>
+<span class="fc" id="L231">                        .filter(visitedLocation -&gt; visitedLocation.timeVisited.equals(user.getLatestLocationTimestamp()))</span>
+<span class="fc" id="L232">                        .collect(Collectors.toList())</span>
+<span class="fc" id="L233">                        .get(0);</span>
+            } else {
+<span class="fc" id="L235">                lastVisitedLocation = userVisitedLocationList.get(userVisitedLocationList.size() - 1);</span>
+            }
+        }
+<span class="fc" id="L238">        return lastVisitedLocation;</span>
+    }
+
+    /**
+     * Add a new VisitedLocation to the given user
+     *
+     * @param user               the user to which a visitedLocation have to be added
+     * @param newVisitedLocation the visitedLocation to add
+     */
+    @Override
+    public void addUserNewVisitedLocation(User user, VisitedLocation newVisitedLocation) {
+<span class="fc" id="L249">        List&lt;VisitedLocation&gt; userVisitedLocationList = user.getVisitedLocations();</span>
+<span class="fc" id="L250">        userVisitedLocationList.add(newVisitedLocation);</span>
+<span class="fc" id="L251">        user.setVisitedLocations(userVisitedLocationList);</span>
+<span class="fc" id="L252">        user.setLatestLocationTimestamp(newVisitedLocation.timeVisited);</span>
+<span class="fc" id="L253">        userRepository.updateUser(user);</span>
+<span class="fc" id="L254">        String message = &quot;A new VisitedLocation has been added for user &quot; + user.getUserName() + &quot;.&quot;;</span>
+<span class="fc" id="L255">        log.debug(message);</span>
+<span class="fc" id="L256">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

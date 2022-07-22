@@ -1,0 +1,12 @@
+tourGuide
+tourGuide.configuration
+tourGuide.controller
+tourGuide.dataSource
+tourGuide.exception
+tourGuide.helper
+tourGuide.model
+tourGuide.model.DTO
+tourGuide.recursiveTask
+tourGuide.repository
+tourGuide.service
+tourGuide.tracker

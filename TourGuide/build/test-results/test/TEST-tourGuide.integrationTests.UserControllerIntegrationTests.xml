@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="tourGuide.integrationTests.UserControllerIntegrationTests" tests="18" skipped="0" failures="0" errors="0" timestamp="2022-07-20T13:44:59" hostname="LAPTOP-FJNEE5I2" time="0.441">
+  <properties/>
+  <testcase name="getUserPreferencesTest" classname="tourGuide.integrationTests.UserControllerIntegrationTests" time="0.013"/>
+  <testcase name="updateUserNonExistingTest" classname="tourGuide.integrationTests.UserControllerIntegrationTests" time="0.045"/>
+  <testcase name="getUserPreferencesNoParameterTest" classname="tourGuide.integrationTests.UserControllerIntegrationTests" time="0.009"/>
+  <testcase name="getUserExistingTest" classname="tourGuide.integrationTests.UserControllerIntegrationTests" time="0.028"/>
+  <testcase name="deleteUserNoParameterTest" classname="tourGuide.integrationTests.UserControllerIntegrationTests" time="0.034"/>
+  <testcase name="getUserPreferencesNotFoundTest" classname="tourGuide.integrationTests.UserControllerIntegrationTests" time="0.011"/>
+  <testcase name="createUserAllParametersTest" classname="tourGuide.integrationTests.UserControllerIntegrationTests" time="0.025"/>
+  <testcase name="getUserNonExistingTest" classname="tourGuide.integrationTests.UserControllerIntegrationTests" time="0.011"/>
+  <testcase name="createUserNoParameterTest" classname="tourGuide.integrationTests.UserControllerIntegrationTests" time="0.038"/>
+  <testcase name="deleteUserNotFoundTest" classname="tourGuide.integrationTests.UserControllerIntegrationTests" time="0.021"/>
+  <testcase name="updateUserNoParameterTest" classname="tourGuide.integrationTests.UserControllerIntegrationTests" time="0.024"/>
+  <testcase name="updateUserPreferencesTest" classname="tourGuide.integrationTests.UserControllerIntegrationTests" time="0.011"/>
+  <testcase name="createUserAlreadyExistingTest" classname="tourGuide.integrationTests.UserControllerIntegrationTests" time="0.04"/>
+  <testcase name="updateUserAllParametersTest" classname="tourGuide.integrationTests.UserControllerIntegrationTests" time="0.023"/>
+  <testcase name="getUserNoParameterTest" classname="tourGuide.integrationTests.UserControllerIntegrationTests" time="0.01"/>
+  <testcase name="createUserOnlyUserNameTest" classname="tourGuide.integrationTests.UserControllerIntegrationTests" time="0.023"/>
+  <testcase name="updateUserOnlyUserNameTest" classname="tourGuide.integrationTests.UserControllerIntegrationTests" time="0.024"/>
+  <testcase name="deleteUserTest" classname="tourGuide.integrationTests.UserControllerIntegrationTests" time="0.02"/>
+  <system-out><![CDATA[2022-07-20 15:44:59.472  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Neither @ContextConfiguration nor @ContextHierarchy found for test class [tourGuide.integrationTests.UserControllerIntegrationTests], using SpringBootContextLoader
+2022-07-20 15:44:59.472  INFO 79672 --- [    Test worker] o.s.t.c.support.AbstractContextLoader    : Could not detect default resource locations for test class [tourGuide.integrationTests.UserControllerIntegrationTests]: no resource found for suffixes {-context.xml, Context.groovy}.
+2022-07-20 15:44:59.472  INFO 79672 --- [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [tourGuide.integrationTests.UserControllerIntegrationTests]: UserControllerIntegrationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2022-07-20 15:44:59.488  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration tourGuide.Application for test class tourGuide.integrationTests.UserControllerIntegrationTests
+2022-07-20 15:44:59.488  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Loaded default TestExecutionListener class names from location [META-INF/spring.factories]: [org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener, org.springframework.test.context.web.ServletTestExecutionListener, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener, org.springframework.test.context.support.DependencyInjectionTestExecutionListener, org.springframework.test.context.support.DirtiesContextTestExecutionListener, org.springframework.test.context.transaction.TransactionalTestExecutionListener, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener]
+2022-07-20 15:44:59.488  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Using TestExecutionListeners: [org.springframework.test.context.web.ServletTestExecutionListener@2f1eb846, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener@3eba48, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener@11a91f56, org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener@1056c1cc, org.springframework.test.context.support.DirtiesContextTestExecutionListener@4a508708, org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener@3f4998f0, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener@66c373e0, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener@40bd8655, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener@e1b218d, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener@7d66a6a6]
+2022-07-20 15:44:59.541 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : The user whose name is nameNonExisting was not found.
+2022-07-20 15:44:59.572 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : The request is not correct : a request parameter is missing or wrong.
+
+2022-07-20 15:44:59.619 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : The request is not correct : a request parameter is missing or wrong.
+
+2022-07-20 15:44:59.653 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : The user whose name is nameNonExisting was not found.
+2022-07-20 15:44:59.684 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : The user whose name is nameNonExisting was not found.
+2022-07-20 15:44:59.714 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : The request is not correct : a request parameter is missing or wrong.
+
+2022-07-20 15:44:59.744 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : The user whose name is nameNonExisting was not found.
+2022-07-20 15:44:59.764 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : The request is not correct : a request parameter is missing or wrong.
+
+2022-07-20 15:44:59.815 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : The user whose name is internalUser1 was already existing, so it couldn't have been added.
+2022-07-20 15:44:59.865 ERROR 79672 --- [    Test worker] t.exception.TourGuideExceptionHandler    : The request is not correct : a request parameter is missing or wrong.
+
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

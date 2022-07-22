@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - Class tourGuide.unitTests.RewardsServiceUnitTests</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>Class tourGuide.unitTests.RewardsServiceUnitTests</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/tourGuide.unitTests.html">tourGuide.unitTests</a> &gt; RewardsServiceUnitTests</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">12</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">4.290s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Tests</a>
+</li>
+<li>
+<a href="#tab1">Standard output</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">calculateRewardsCloseAttractionsAlreadyInUserRewardListTest</td>
+<td class="success">0.747s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">calculateRewardsNotEnoughCLoseAttractionToAddRewardsTest</td>
+<td class="success">0.974s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">calculateRewardsTest</td>
+<td class="success">1.229s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">calculateRewardsWithoutVisitedLocationTest</td>
+<td class="success">0.703s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">isNotInRewardListAttractionInListTest</td>
+<td class="success">0.039s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">isNotInRewardListAttractionNotInListTest</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">isNotInRewardListUserWithoutRewardTest</td>
+<td class="success">0.014s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">nearAttractionWhenIsNearTest</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">nearAttractionWhenIsNotNearTest</td>
+<td class="success">0.006s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">searchFiveClosestAttractionEmptyAttractionTest</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">searchFiveClosestAttractionLessThanFiveAttractionTest</td>
+<td class="success">0.011s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">searchFiveClosestAttractionTest</td>
+<td class="success">0.554s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div id="tab1" class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>2022-07-20 15:58:14.288  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Neither @ContextConfiguration nor @ContextHierarchy found for test class [tourGuide.unitTests.RewardsServiceUnitTests], using SpringBootContextLoader
+2022-07-20 15:58:14.357  INFO 79672 --- [    Test worker] o.s.t.c.support.AbstractContextLoader    : Could not detect default resource locations for test class [tourGuide.unitTests.RewardsServiceUnitTests]: no resource found for suffixes {-context.xml, Context.groovy}.
+2022-07-20 15:58:14.357  INFO 79672 --- [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [tourGuide.unitTests.RewardsServiceUnitTests]: RewardsServiceUnitTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2022-07-20 15:58:15.141  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration tourGuide.Application for test class tourGuide.unitTests.RewardsServiceUnitTests
+2022-07-20 15:58:15.224  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Loaded default TestExecutionListener class names from location [META-INF/spring.factories]: [org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener, org.springframework.test.context.web.ServletTestExecutionListener, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener, org.springframework.test.context.support.DependencyInjectionTestExecutionListener, org.springframework.test.context.support.DirtiesContextTestExecutionListener, org.springframework.test.context.transaction.TransactionalTestExecutionListener, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener]
+2022-07-20 15:58:15.261  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Using TestExecutionListeners: [org.springframework.test.context.web.ServletTestExecutionListener@204800cf, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener@34c4f096, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener@4e131882, org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener@74597478, org.springframework.test.context.support.DirtiesContextTestExecutionListener@14774c44, org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener@7244e1c, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener@51259172, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener@6e60c59a, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener@40dbb17e, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener@65aa53d7]
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.1.6.RELEASE)
+
+2022-07-20 15:58:16.144  INFO 79672 --- [    Test worker] t.unitTests.RewardsServiceUnitTests      : Starting RewardsServiceUnitTests on LAPTOP-FJNEE5I2 with PID 79672 (started by CABROL in C:\Users\CABROL\Documents\Justine\OpenClassrooms\projectTourguide\TourGuide)
+2022-07-20 15:58:16.145  INFO 79672 --- [    Test worker] t.unitTests.RewardsServiceUnitTests      : The following profiles are active: unitTest,test
+2022-07-20 15:58:47.751  INFO 79672 --- [    Test worker] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2022-07-20 15:58:52.315  INFO 79672 --- [    Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoint(s) beneath base path '/actuator'
+2022-07-20 15:58:52.730  INFO 79672 --- [    Test worker] t.unitTests.RewardsServiceUnitTests      : Started RewardsServiceUnitTests in 37.341 seconds (JVM running for 858.256)
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 4.8.1</a> at 20 juil. 2022 15:59:56</p>
+</div>
+</div>
+</body>
+</html>

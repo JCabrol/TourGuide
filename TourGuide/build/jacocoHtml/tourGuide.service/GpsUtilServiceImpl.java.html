@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GpsUtilServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TourGuide</a> &gt; <a href="index.source.html" class="el_package">tourGuide.service</a> &gt; <span class="el_source">GpsUtilServiceImpl.java</span></div><h1>GpsUtilServiceImpl.java</h1><pre class="source lang-java linenums">package tourGuide.service;
+
+import gpsUtil.location.Attraction;
+import gpsUtil.location.VisitedLocation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import tourGuide.repository.GpsUtilRepository;
+
+import java.util.List;
+import java.util.UUID;
+
+@Service
+<span class="fc" id="L13">public class GpsUtilServiceImpl implements GpsUtilService {</span>
+
+    @Autowired
+    private GpsUtilRepository gpsUtilRepository;
+
+    /**
+     * Get a visited location from a userId
+     *
+     * @param userId a UUID object which is the identifiant of the user
+     * @return a visitedLocation
+     */
+    @Override
+    public VisitedLocation getUserLocation(UUID userId) {
+<span class="fc" id="L26">        return gpsUtilRepository.getUserLocation(userId);</span>
+    }
+
+    /**
+     * Get the list of all existing attractions
+     *
+     * @return a list of attractions containing all existing attractions
+     */
+    @Override
+    public List&lt;Attraction&gt; getAttractions() {
+<span class="fc" id="L36">        return gpsUtilRepository.getAttractions();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

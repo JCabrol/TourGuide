@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="tourGuide.unitTests.TourGuideServiceUnitTests" tests="10" skipped="0" failures="0" errors="0" timestamp="2022-07-20T13:59:26" hostname="LAPTOP-FJNEE5I2" time="5.94">
+  <properties/>
+  <testcase name="getUserLocationNonExistingLocationTest" classname="tourGuide.unitTests.TourGuideServiceUnitTests" time="0.005"/>
+  <testcase name="getAllCurrentLocationsTest" classname="tourGuide.unitTests.TourGuideServiceUnitTests" time="0.112"/>
+  <testcase name="searchFiveClosestAttractionsNonExistingUserTest" classname="tourGuide.unitTests.TourGuideServiceUnitTests" time="0.075"/>
+  <testcase name="searchFiveClosestAttractionsTest" classname="tourGuide.unitTests.TourGuideServiceUnitTests" time="0.011"/>
+  <testcase name="trackAllUsersEmptyUsersTest" classname="tourGuide.unitTests.TourGuideServiceUnitTests" time="0.005"/>
+  <testcase name="getUserLocationExistingLocationTest" classname="tourGuide.unitTests.TourGuideServiceUnitTests" time="0.006"/>
+  <testcase name="getAllCurrentLocationsUsersWithoutLocationTest" classname="tourGuide.unitTests.TourGuideServiceUnitTests" time="0.009"/>
+  <testcase name="trackUserLocationTest" classname="tourGuide.unitTests.TourGuideServiceUnitTests" time="0.145"/>
+  <testcase name="getAllCurrentLocationsEmptyListOfUsersTest" classname="tourGuide.unitTests.TourGuideServiceUnitTests" time="0.007"/>
+  <testcase name="trackAllUsersTest" classname="tourGuide.unitTests.TourGuideServiceUnitTests" time="5.554"/>
+  <system-out><![CDATA[2022-07-20 15:59:15.646  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Neither @ContextConfiguration nor @ContextHierarchy found for test class [tourGuide.unitTests.TourGuideServiceUnitTests], using SpringBootContextLoader
+2022-07-20 15:59:15.647  INFO 79672 --- [    Test worker] o.s.t.c.support.AbstractContextLoader    : Could not detect default resource locations for test class [tourGuide.unitTests.TourGuideServiceUnitTests]: no resource found for suffixes {-context.xml, Context.groovy}.
+2022-07-20 15:59:15.647  INFO 79672 --- [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [tourGuide.unitTests.TourGuideServiceUnitTests]: TourGuideServiceUnitTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2022-07-20 15:59:15.650  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration tourGuide.Application for test class tourGuide.unitTests.TourGuideServiceUnitTests
+2022-07-20 15:59:15.653  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Loaded default TestExecutionListener class names from location [META-INF/spring.factories]: [org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener, org.springframework.test.context.web.ServletTestExecutionListener, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener, org.springframework.test.context.support.DependencyInjectionTestExecutionListener, org.springframework.test.context.support.DirtiesContextTestExecutionListener, org.springframework.test.context.transaction.TransactionalTestExecutionListener, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener]
+2022-07-20 15:59:15.741  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Using TestExecutionListeners: [org.springframework.test.context.web.ServletTestExecutionListener@2fc8d4fd, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener@5648d03e, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener@46d4c175, org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener@4f59c6a0, org.springframework.test.context.support.DirtiesContextTestExecutionListener@265f8c8a, org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener@3686715f, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener@5639d193, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener@57546132, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener@d359c8e, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener@8bc08fe]
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.1.6.RELEASE)
+
+2022-07-20 15:59:16.002  INFO 79672 --- [    Test worker] t.unitTests.TourGuideServiceUnitTests    : Starting TourGuideServiceUnitTests on LAPTOP-FJNEE5I2 with PID 79672 (started by CABROL in C:\Users\CABROL\Documents\Justine\OpenClassrooms\projectTourguide\TourGuide)
+2022-07-20 15:59:16.003  INFO 79672 --- [    Test worker] t.unitTests.TourGuideServiceUnitTests    : The following profiles are active: unitTest,test
+2022-07-20 15:59:22.136  INFO 79672 --- [    Test worker] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2022-07-20 15:59:25.844  INFO 79672 --- [    Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoint(s) beneath base path '/actuator'
+2022-07-20 15:59:26.272  INFO 79672 --- [    Test worker] t.unitTests.TourGuideServiceUnitTests    : Started TourGuideServiceUnitTests in 10.525 seconds (JVM running for 891.796)
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

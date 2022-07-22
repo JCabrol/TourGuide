@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TripPricerRepository.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TourGuide</a> &gt; <a href="index.source.html" class="el_package">tourGuide.repository</a> &gt; <span class="el_source">TripPricerRepository.java</span></div><h1>TripPricerRepository.java</h1><pre class="source lang-java linenums">package tourGuide.repository;
+
+import org.springframework.stereotype.Repository;
+import tripPricer.Provider;
+import tripPricer.TripPricer;
+
+import java.util.List;
+import java.util.UUID;
+
+@Repository
+<span class="fc" id="L11">public class TripPricerRepository {</span>
+
+<span class="fc" id="L13">    private final TripPricer tripPricer = new TripPricer();</span>
+
+    /**
+     * Get a list of Provider objects for a user, calculated from its preferences and its already obtained points
+     * A provider object contains an id, a name and a price to pay, corresponding to a trip proposition made by an agency
+     *
+     * @param apiKey        a String which is a code to connect with the api tripPricer
+     * @param userId        a UUID object which is the identifiant of user
+     * @param adults        the number of adults for the trip
+     * @param children      the number of children for the trip
+     * @param nightsStay    the duration of the trip
+     * @param rewardsPoints the total of points obtained by the user
+     * @return a list of 5 providers
+     */
+    public List&lt;Provider&gt; getPrice(String apiKey, UUID userId, int adults, int children, int nightsStay, int rewardsPoints) {
+<span class="fc" id="L28">        return tripPricer.getPrice(apiKey, userId, adults, children, nightsStay, rewardsPoints);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

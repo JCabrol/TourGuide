@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="tourGuide.unitTests.RewardsServiceUnitTests" tests="12" skipped="0" failures="0" errors="0" timestamp="2022-07-20T13:58:52" hostname="LAPTOP-FJNEE5I2" time="4.312">
+  <properties/>
+  <testcase name="calculateRewardsNotEnoughCLoseAttractionToAddRewardsTest" classname="tourGuide.unitTests.RewardsServiceUnitTests" time="0.974"/>
+  <testcase name="calculateRewardsCloseAttractionsAlreadyInUserRewardListTest" classname="tourGuide.unitTests.RewardsServiceUnitTests" time="0.747"/>
+  <testcase name="nearAttractionWhenIsNearTest" classname="tourGuide.unitTests.RewardsServiceUnitTests" time="0.005"/>
+  <testcase name="nearAttractionWhenIsNotNearTest" classname="tourGuide.unitTests.RewardsServiceUnitTests" time="0.006"/>
+  <testcase name="searchFiveClosestAttractionEmptyAttractionTest" classname="tourGuide.unitTests.RewardsServiceUnitTests" time="0.005"/>
+  <testcase name="calculateRewardsTest" classname="tourGuide.unitTests.RewardsServiceUnitTests" time="1.229"/>
+  <testcase name="searchFiveClosestAttractionLessThanFiveAttractionTest" classname="tourGuide.unitTests.RewardsServiceUnitTests" time="0.011"/>
+  <testcase name="isNotInRewardListUserWithoutRewardTest" classname="tourGuide.unitTests.RewardsServiceUnitTests" time="0.014"/>
+  <testcase name="calculateRewardsWithoutVisitedLocationTest" classname="tourGuide.unitTests.RewardsServiceUnitTests" time="0.703"/>
+  <testcase name="isNotInRewardListAttractionNotInListTest" classname="tourGuide.unitTests.RewardsServiceUnitTests" time="0.003"/>
+  <testcase name="searchFiveClosestAttractionTest" classname="tourGuide.unitTests.RewardsServiceUnitTests" time="0.554"/>
+  <testcase name="isNotInRewardListAttractionInListTest" classname="tourGuide.unitTests.RewardsServiceUnitTests" time="0.039"/>
+  <system-out><![CDATA[2022-07-20 15:58:14.288  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Neither @ContextConfiguration nor @ContextHierarchy found for test class [tourGuide.unitTests.RewardsServiceUnitTests], using SpringBootContextLoader
+2022-07-20 15:58:14.357  INFO 79672 --- [    Test worker] o.s.t.c.support.AbstractContextLoader    : Could not detect default resource locations for test class [tourGuide.unitTests.RewardsServiceUnitTests]: no resource found for suffixes {-context.xml, Context.groovy}.
+2022-07-20 15:58:14.357  INFO 79672 --- [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [tourGuide.unitTests.RewardsServiceUnitTests]: RewardsServiceUnitTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2022-07-20 15:58:15.141  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration tourGuide.Application for test class tourGuide.unitTests.RewardsServiceUnitTests
+2022-07-20 15:58:15.224  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Loaded default TestExecutionListener class names from location [META-INF/spring.factories]: [org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener, org.springframework.test.context.web.ServletTestExecutionListener, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener, org.springframework.test.context.support.DependencyInjectionTestExecutionListener, org.springframework.test.context.support.DirtiesContextTestExecutionListener, org.springframework.test.context.transaction.TransactionalTestExecutionListener, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener]
+2022-07-20 15:58:15.261  INFO 79672 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Using TestExecutionListeners: [org.springframework.test.context.web.ServletTestExecutionListener@204800cf, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener@34c4f096, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener@4e131882, org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener@74597478, org.springframework.test.context.support.DirtiesContextTestExecutionListener@14774c44, org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener@7244e1c, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener@51259172, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener@6e60c59a, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener@40dbb17e, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener@65aa53d7]
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.1.6.RELEASE)
+
+2022-07-20 15:58:16.144  INFO 79672 --- [    Test worker] t.unitTests.RewardsServiceUnitTests      : Starting RewardsServiceUnitTests on LAPTOP-FJNEE5I2 with PID 79672 (started by CABROL in C:\Users\CABROL\Documents\Justine\OpenClassrooms\projectTourguide\TourGuide)
+2022-07-20 15:58:16.145  INFO 79672 --- [    Test worker] t.unitTests.RewardsServiceUnitTests      : The following profiles are active: unitTest,test
+2022-07-20 15:58:47.751  INFO 79672 --- [    Test worker] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2022-07-20 15:58:52.315  INFO 79672 --- [    Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoint(s) beneath base path '/actuator'
+2022-07-20 15:58:52.730  INFO 79672 --- [    Test worker] t.unitTests.RewardsServiceUnitTests      : Started RewardsServiceUnitTests in 37.341 seconds (JVM running for 858.256)
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

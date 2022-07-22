@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TourGuideInitialisation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TourGuide</a> &gt; <a href="index.source.html" class="el_package">tourGuide.configuration</a> &gt; <span class="el_source">TourGuideInitialisation.java</span></div><h1>TourGuideInitialisation.java</h1><pre class="source lang-java linenums">package tourGuide.configuration;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+import tourGuide.dataSource.InternalUserMap;
+import tourGuide.service.RewardsService;
+import tourGuide.service.TourGuideService;
+
+<span class="fc" id="L13">@Slf4j</span>
+//This configuration is disabled for unit tests which are running without initializing InternalUserMap and without tracker
+//This configuration is disabled for integration tests which are running without tracker
+//This configuration is used for performance tests and for running application
+@Profile(&quot;!test&quot;)
+@Component
+public class TourGuideInitialisation implements ApplicationRunner {
+
+    private final TourGuideService tourGuideService;
+    private final RewardsService rewardsService;
+    private final InternalUserMap internalUserMap;
+
+
+    @Autowired
+<span class="fc" id="L27">    public TourGuideInitialisation(TourGuideService tourGuideService, RewardsService rewardsService, InternalUserMap internalUserMap) {</span>
+<span class="fc" id="L28">        this.tourGuideService = tourGuideService;</span>
+<span class="fc" id="L29">        this.rewardsService = rewardsService;</span>
+<span class="fc" id="L30">        this.internalUserMap = internalUserMap;</span>
+<span class="fc" id="L31">    }</span>
+
+    /**
+     * Callback used to run the bean.
+     * Permit to initialize the internalUserMap with the chosen user number,
+     * begin the tracker running
+     * and load Attractions into RewardsService's attractionList
+     * when the beans are created.
+     *
+     * @param args incoming application arguments
+     */
+    @Override
+    public void run(ApplicationArguments args) {
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">        if (internalUserMap.isTestMode()) {</span>
+<span class="fc" id="L45">            log.info(&quot;TestMode enabled&quot;);</span>
+<span class="fc" id="L46">            log.info(&quot;Initializing users&quot;);</span>
+<span class="fc" id="L47">            internalUserMap.initializeInternalUsers();</span>
+<span class="fc" id="L48">            log.info(&quot;Finished initializing users&quot;);</span>
+        }
+<span class="fc" id="L50">        tourGuideService.initializeTourGuideService();</span>
+<span class="fc" id="L51">        rewardsService.initializeRewardsService();</span>
+<span class="fc" id="L52">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
