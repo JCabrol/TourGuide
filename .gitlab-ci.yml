@@ -3,6 +3,7 @@ image: gradle:4.8.1-jdk8
 stages:
   - build
   - test
+  - documentation
 
 cache:
   paths:
@@ -17,7 +18,12 @@ before_script:
   - GRADLE_USER_HOME="$(pwd)/.gradle"
   - export GRADLE_USER_HOME
 
-build:
+ 
+assemble:
+  stage: build
+  script: gradle assemble
+
+bootJar:
   stage: build
   script: gradle --build-cache bootJar
   artifacts:
@@ -29,8 +35,19 @@ test:
   script: gradle test
   artifacts:
     when: always
-    paths:
-      - rspec.xml
     reports:
-      junit: rspec.xml 
+      junit: build/test-results/test/**/TEST-*.xml
      
+testReport:
+  stage: test
+  script: gradle jacocoTestReport
+  artifacts:
+    paths:
+      - build/jacocoHtml/index.html
+
+javadoc:
+  stage: documentation
+  script: gradle javadoc
+  artifacts:
+    paths:
+      - build/docs/javadoc/tourGuide/*
