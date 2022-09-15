@@ -10,9 +10,11 @@ The main skills acquired with this project were:
 * Complete a suite of unit and integration tests to take into account the changes made
 * Provide customer-requested feature enhancements
 
+More information about the project:
+
 * This project is shared on gitLab with a continuous integration pipeline. ([Here is my GitLab repository](https://gitlab.com/JCabrol/tourguideproject))
-* Here is the [technical documentation]() I made for this project.
-* Here are the [presentation slideshows]() I made for this project.
+* Here is the [technical documentation](https://github.com/JCabrol/TourGuide/blob/develop/Cabrol_Justine_2_documentation_052022.pdf) I made for this project.
+* Here are the [presentation slideshows](https://github.com/JCabrol/TourGuide/blob/develop/Cabrol_Justine_5_presentation_052022.pdf) I made for this project.
 
 
 ## Description
